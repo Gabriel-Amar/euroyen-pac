@@ -1,0 +1,6 @@
+# Dependencies and environment
+.DS_Store
+Thumbs.db
+node_modules/
+dist/
+*.log

@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EUR/JPY PAC Speculator — Mobile App Navigation</title>
+    <meta name="description" content="Smartphone-ready EUR to JPY DCA tracker, daily & intraday charts, and Yen appreciation profit simulator.">
+    
+    <!-- PWA & Mobile Web App Meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yen PAC">
+    <meta name="theme-color" content="#06070a">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Pitch Black & Electric Violet Theme */
+            --bg: #06070a;
+            --surface: #0b0d14;
+            --surface-card: #0f121d;
+            --surface-card-hover: #151928;
+            --surface-input: #080910;
+            --border: #1a1d2d;
+            --border-light: #262b42;
+            --border-focus: #8b5cf6;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            
+            /* Electric Violet / Purple Accents */
+            --brand-violet: #8b5cf6;
+            --brand-violet-hover: #7c3aed;
+            --brand-violet-glow: rgba(139, 92, 246, 0.22);
+            --brand-violet-light: #c4b5fd;
+            
+            --accent-profit: #10b981;
+            --accent-profit-bg: rgba(16, 185, 129, 0.12);
+            --accent-loss: #f43f5e;
+            --accent-loss-bg: rgba(244, 63, 94, 0.12);
+            --accent-amber: #f59e0b;
+            --accent-amber-bg: rgba(245, 158, 11, 0.12);
+            
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 8px;
+            --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.7);
+            --shadow-glow: 0 0 20px -2px rgba(139, 92, 246, 0.35);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8f7fc;
+            --surface: #ffffff;
+            --surface-card: #ffffff;
+            --surface-card-hover: #f5f3ff;
+            --surface-input: #f8f7fc;
+            --border: #e9d5ff;
+            --border-light: #d8b4fe;
+            --border-focus: #7c3aed;
+            
+            --text-primary: #18181b;
+            --text-secondary: #52525b;
+            --text-muted: #a1a1aa;
+            
+            --brand-violet: #7c3aed;
+            --brand-violet-hover: #6d28d9;
+            --brand-violet-glow: rgba(124, 58, 237, 0.12);
+            --brand-violet-light: #5b21b6;
+            
+            --accent-profit: #059669;
+            --accent-profit-bg: #ecfdf5;
+            --accent-loss: #e11d48;
+            --accent-loss-bg: #fff1f2;
+            --accent-amber: #d97706;
+            --accent-amber-bg: #fffbeb;
+            
+            --shadow-card: 0 4px 16px -2px rgba(124, 58, 237, 0.06);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: calc(12px + env(safe-area-inset-top)) 16px calc(72px + env(safe-area-inset-bottom));
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        /* Clean Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4c1d95 0%, #8b5cf6 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+            color: white;
+            font-weight: 800;
+            font-size: 1rem;
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+        }
+
+        .brand-text h1 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* 3-Dots Menu Button & Dropdown */
+        .menu-wrapper {
+            position: relative;
+        }
+
+        .btn-dots {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .btn-dots:hover, .btn-dots:active {
+            background: var(--surface-card-hover);
+            border-color: var(--brand-violet);
+            color: var(--brand-violet-light);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: var(--surface-card);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius-md);
+            padding: 6px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), var(--shadow-glow);
+            z-index: 1050;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            animation: fadeIn 0.15s ease;
+        }
+        .dropdown-menu.active { display: flex; }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.1s ease;
+            width: 100%;
+        }
+        .dropdown-item:hover, .dropdown-item:active {
+            background: var(--surface-input);
+            color: var(--brand-violet-light);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background-color: var(--surface-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 7px 11px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.775rem;
+            font-weight: 600;
+            min-height: 32px;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-violet-hover) 0%, var(--brand-violet) 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.35);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6d28d9 0%, var(--brand-violet-hover) 100%);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--accent-loss);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        .btn-sm { padding: 4px 8px; font-size: 0.725rem; min-height: 26px; border-radius: 6px; }
+
+        .icon {
+            width: 15px;
+            height: 15px;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* ==========================================================
+           ULTRA-COMPACT KPI DASHBOARD GRID
+           ========================================================== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .kpi-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            border-color: rgba(139, 92, 246, 0.35);
+        }
+
+        .kpi-card.highlight {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.09) 0%, var(--surface-card) 100%);
+            border-color: rgba(139, 92, 246, 0.35);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .kpi-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .kpi-number {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.15;
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+
+        .kpi-footer {
+            font-size: 0.675rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 1px 6px;
+            border-radius: 9999px;
+            font-size: 0.625rem;
+            font-weight: 600;
+        }
+        .pill-profit { background: var(--accent-profit-bg); color: var(--accent-profit); }
+        .pill-loss { background: var(--accent-loss-bg); color: var(--accent-loss); }
+        .pill-amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
+        .pill-violet { background: var(--brand-violet-glow); color: var(--brand-violet-light); }
+        .pill-muted { background: var(--surface-input); color: var(--text-muted); }
+
+        .pulse-live {
+            width: 5px;
+            height: 5px;
+            background: var(--accent-profit);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px var(--accent-profit);
+        }
+
+        /* ==========================================================
+           DESKTOP NAVIGATION (Visible on Desktop >= 768px)
+           ========================================================== */
+        .desktop-nav-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--surface);
+            padding: 4px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            min-height: 36px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--surface-card);
+            color: var(--brand-violet-light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        /* ==========================================================
+           SMARTPHONE NATIVE BOTTOM NAVIGATION BAR (< 768px)
+           ========================================================== */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(11, 13, 20, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-light);
+            padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
+            z-index: 900;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .mob-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            flex: 1;
+            max-width: 90px;
+        }
+
+        .mob-nav-item.active {
+            color: var(--brand-violet-light);
+        }
+
+        .mob-nav-item.active .icon {
+            stroke: var(--brand-violet);
+            filter: drop-shadow(0 0 6px var(--brand-violet));
+        }
+
+        /* Tab Panels */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.15s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.725rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .chart-controls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: var(--surface-input);
+            padding: 2px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .time-btn {
+            background: transparent;
+            border: none;
+            padding: 4px 7px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            cursor: pointer;
+            min-height: 26px;
+            white-space: nowrap;
+        }
+        .time-btn.active {
+            background: var(--surface-card);
+            color: var(--brand-violet-light);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .field label {
+            font-size: 0.675rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--surface-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 16px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Table */
+        .table-box {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+            min-width: 460px;
+        }
+
+        th {
+            background: var(--surface-input);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.675rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+
+        .mono { font-family: var(--font-mono); }
+
+        /* Scenarios */
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .scenario-card {
+            background: var(--surface-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .scenario-card.rally-high {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, var(--surface-input) 100%);
+        }
+        .scenario-card.rally-mid {
+            border-color: rgba(139, 92, 246, 0.35);
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, var(--surface-input) 100%);
+        }
+        .scenario-card.dip-buy {
+            border-color: rgba(245, 158, 11, 0.35);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--surface-input) 100%);
+        }
+
+        .scenario-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.675rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+        .scenario-tag.profit { color: var(--accent-profit); }
+        .scenario-tag.violet { color: var(--brand-violet-light); }
+        .scenario-tag.amber { color: var(--accent-amber); }
+
+        .scenario-rate {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .scenario-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.725rem;
+            padding: 3px 0;
+            border-top: 1px dashed var(--border);
+            color: var(--text-secondary);
+        }
+        .scenario-metric strong {
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        /* Touch Slider */
+        .slider-box {
+            background: var(--surface-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .slider-box input[type="range"] {
+            width: 100%;
+            accent-color: var(--brand-violet);
+            cursor: pointer;
+            height: 7px;
+            margin: 4px 0;
+        }
+
+        .sim-results-ribbon {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            background: var(--surface-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            margin-top: 2px;
+        }
+
+        .sim-stat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .sim-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .sim-stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        /* Modal */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+            padding: 16px;
+        }
+        .modal-bg.active { display: flex; }
+
+        .modal-box {
+            background: var(--surface-card);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), var(--shadow-glow);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.3rem;
+            line-height: 1;
+            padding: 4px;
+        }
+        .close-btn:hover { color: var(--text-primary); }
+
+        /* ==========================================================
+           RESPONSIVE SMARTPHONE BREAKPOINT (< 768px)
+           ========================================================== */
+        @media (max-width: 768px) {
+            .desktop-nav-tabs { display: none; }
+            .mobile-bottom-nav { display: flex; }
+
+            /* Ultra-compact 2x2 grid on mobile */
+            .kpi-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 6px; 
+                margin-bottom: 10px;
+            }
+            .kpi-card { padding: 8px 10px; }
+            .kpi-number { font-size: 1.15rem; margin-bottom: 2px; }
+            .kpi-title { font-size: 0.6rem; }
+            .kpi-footer { font-size: 0.65rem; }
+
+            .scenarios-grid { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 250px; }
+            .card { padding: 14px; margin-bottom: 12px; }
+            
+            .modal-bg {
+                align-items: flex-end;
+                padding: 0;
+            }
+            .modal-box {
+                border-radius: 18px 18px 0 0;
+                max-width: 100%;
+                padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (max-width: 360px) {
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .kpi-number { font-size: 1.05rem; }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body onclick="closeDropdownIfOutside(event)">
+
+<div class="container">
+    <!-- Header with 3-Dots Menu -->
+    <header>
+        <div class="brand-container">
+            <div class="brand-logo">¥</div>
+            <div class="brand-text">
+                <h1>EUR/JPY PAC Speculator</h1>
+                <p>OLED Dark • Daily & Intraday Rates</p>
+            </div>
+        </div>
+        
+        <!-- 3-Dots Dropdown Menu -->
+        <div class="menu-wrapper">
+            <button class="btn-dots" id="btn-dots-toggle" onclick="toggleDropdown(event)" title="Options Menu">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </button>
+            <div class="dropdown-menu" id="header-dropdown" onclick="event.stopPropagation()">
+                <button class="dropdown-item" onclick="toggleTheme(); closeDropdown();">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                    <span id="theme-drop-label">Toggle Light Mode</span>
+                </button>
+                <button class="dropdown-item" onclick="fetchLiveMarketData(true); closeDropdown();">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                    <span>Sync Live Rates</span>
+                </button>
+                <button class="dropdown-item" onclick="openBackupModal(); closeDropdown();">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    <span>Backup & Restore</span>
+                </button>
+                <div class="dropdown-divider" id="drop-install-divider" style="display: none;"></div>
+                <button class="dropdown-item" id="drop-install-btn" style="display: none; color: var(--brand-violet-light);" onclick="installPWA(); closeDropdown();">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    <span>Install App (PWA)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ULTRA-COMPACT KPI DASHBOARD -->
+    <div class="kpi-grid">
+        <!-- Live Spot Rate -->
+        <div class="kpi-card highlight">
+            <div class="kpi-header">
+                <span class="kpi-title">Live Spot</span>
+                <span class="pulse-live"></span>
+            </div>
+            <div class="kpi-number" id="kpi-spot-rate">-- ¥</div>
+            <div class="kpi-footer" id="kpi-spot-date">Connecting...</div>
+        </div>
+
+        <!-- Buy Price (PMC) -->
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">Buy Price (PMC)</span>
+                <span class="pill pill-muted" id="kpi-buys-badge">0 Buys</span>
+            </div>
+            <div class="kpi-number" id="kpi-pmc">-- ¥</div>
+            <div class="kpi-footer" id="kpi-pmc-diff">Break-Even</div>
+        </div>
+
+        <!-- Position Value in EUR -->
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">JPY Held / EUR</span>
+                <span class="pill pill-violet" id="kpi-jpy-count">¥0</span>
+            </div>
+            <div class="kpi-number" id="kpi-eur-now">€0.00</div>
+            <div class="kpi-footer" id="kpi-eur-cost">€0 spent</div>
+        </div>
+
+        <!-- Speculative P&L Today -->
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-title">P&L Today</span>
+                <span class="pill pill-muted" id="kpi-pnl-pill">P&L</span>
+            </div>
+            <div class="kpi-number" id="kpi-profit-val">€0.00</div>
+            <div class="kpi-footer" id="kpi-profit-roi">0.0% ROI</div>
+        </div>
+    </div>
+
+    <!-- DESKTOP TABS (Visible >= 768px) -->
+    <nav class="desktop-nav-tabs">
+        <button class="tab-btn active" id="desk-tab-market" onclick="switchTab('market')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18M18 9l-5 5-4-4-6 6"/></svg>
+            Market Chart
+        </button>
+        <button class="tab-btn" id="desk-tab-forecast" onclick="switchTab('forecast')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M2 12h5l3 7 4-14 3 7h5"/></svg>
+            Yen Profit Simulator
+        </button>
+        <button class="tab-btn" id="desk-tab-ledger" onclick="switchTab('ledger')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Purchases (<span id="tab-count-badge">0</span>)
+        </button>
+        <button class="tab-btn" id="desk-tab-strategy" onclick="switchTab('strategy')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            DCA Ladder
+        </button>
+    </nav>
+
+    <!-- TAB 1: Market & Real Historical Chart (FIRST PANEL, DEFAULT 1M) -->
+    <div class="tab-panel active" id="tab-market">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title" id="chart-main-title">EUR / JPY Trend (1M Daily)</h2>
+                    <p class="card-desc" id="chart-sub-title">European Central Bank & Intraday Reference Rates</p>
+                </div>
+                <div class="chart-controls">
+                    <button class="time-btn" onclick="changeChartTimeframe('1D')">1D</button>
+                    <button class="time-btn" onclick="changeChartTimeframe('1W')">1W</button>
+                    <button class="time-btn active" onclick="changeChartTimeframe('1M')">1M</button>
+                    <button class="time-btn" onclick="changeChartTimeframe('3M')">3M</button>
+                    <button class="time-btn" onclick="changeChartTimeframe('1Y')">1Y</button>
+                    <button class="time-btn" onclick="changeChartTimeframe('5Y')">5Y</button>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="rateChart"></canvas>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="card" style="margin-bottom: 0;">
+                <div class="kpi-title" id="stat-ma-title">30-Day Moving Average</div>
+                <div class="kpi-number" style="font-size: 1.25rem;" id="stat-ma30">-- ¥</div>
+                <div class="card-desc">Period baseline</div>
+            </div>
+            <div class="card" style="margin-bottom: 0;">
+                <div class="kpi-title">Period High / Low</div>
+                <div class="kpi-number" style="font-size: 1.25rem;" id="stat-highlow">-- / --</div>
+                <div class="card-desc">Extremes in timeframe</div>
+            </div>
+            <div class="card" style="margin-bottom: 0;">
+                <div class="kpi-title">Break-Even Spread</div>
+                <div class="kpi-number" style="font-size: 1.25rem;" id="stat-be-spread">-- ¥</div>
+                <div class="card-desc">Distance from spot to PMC</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Future Speculation & Exit Scenarios -->
+    <div class="tab-panel" id="tab-forecast">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Yen Appreciation Profit Forecast</h2>
+                    <p class="card-desc">When Yen gains power (EUR/JPY drops), selling Yen to Euros makes EUR profit.</p>
+                </div>
+            </div>
+
+            <!-- Position Parameters -->
+            <div class="form-grid">
+                <div class="field">
+                    <label>Total Speculation Budget (EUR €)</label>
+                    <input type="number" id="fc-budget" placeholder="3000" oninput="updateBudgetSetting()">
+                </div>
+                <div class="field">
+                    <label>Invested in Yen</label>
+                    <input type="text" id="fc-invested-eur" value="€0.00" readonly style="background: transparent; border-color: transparent; font-weight: 700; font-family: var(--font-mono);">
+                </div>
+                <div class="field">
+                    <label>Yen Held</label>
+                    <input type="text" id="fc-held-jpy" value="¥0" readonly style="background: transparent; border-color: transparent; font-weight: 700; color: var(--accent-profit); font-family: var(--font-mono);">
+                </div>
+            </div>
+
+            <!-- 3 Speculation Scenarios Grid -->
+            <div class="scenarios-grid">
+                <!-- Target 1: 150.00 ¥ -->
+                <div class="scenario-card rally-high">
+                    <div>
+                        <div class="scenario-tag profit">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            Target 1: Major Surge (150.00 ¥)
+                        </div>
+                        <div class="scenario-rate" id="scen-t1-rate">150.00 ¥</div>
+                    </div>
+                    <div>
+                        <div class="scenario-metric">
+                            <span>EUR Value:</span>
+                            <strong id="scen-t1-eur">€0.00</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Net Profit:</span>
+                            <strong style="color: var(--accent-profit);" id="scen-t1-profit">+€0.00</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Net ROI:</span>
+                            <strong style="color: var(--accent-profit);" id="scen-t1-roi">+0.0%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target 2: 165.00 ¥ -->
+                <div class="scenario-card rally-mid">
+                    <div>
+                        <div class="scenario-tag violet">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                            Target 2: Moderate (165.00 ¥)
+                        </div>
+                        <div class="scenario-rate" id="scen-t2-rate">165.00 ¥</div>
+                    </div>
+                    <div>
+                        <div class="scenario-metric">
+                            <span>EUR Value:</span>
+                            <strong id="scen-t2-eur">€0.00</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Net Profit:</span>
+                            <strong style="color: var(--accent-profit);" id="scen-t2-profit">+€0.00</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Net ROI:</span>
+                            <strong style="color: var(--brand-violet-light);" id="scen-t2-roi">+0.0%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dip Buy Opportunity: 195.00 ¥ -->
+                <div class="scenario-card dip-buy">
+                    <div>
+                        <div class="scenario-tag amber">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                            Dip Buy (195.00 ¥)
+                        </div>
+                        <div class="scenario-rate" id="scen-dip-rate">195.00 ¥</div>
+                    </div>
+                    <div>
+                        <div class="scenario-metric">
+                            <span>Market:</span>
+                            <strong style="color: var(--accent-amber);">Yen Super Cheap</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Action:</span>
+                            <strong>Buy Yen at Discount</strong>
+                        </div>
+                        <div class="scenario-metric">
+                            <span>Benefit:</span>
+                            <strong style="color: var(--accent-amber);">Lowers PMC</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Interactive Profit / Exit Simulator -->
+            <div class="slider-box">
+                <div class="slider-header">
+                    <div>
+                        <span style="font-size: 0.675rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Simulate Selling Yen to Euros:</span>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">Set target exit rate to calculate EUR proceeds:</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Exit Rate: </span>
+                        <strong class="mono" style="font-size: 1.2rem; color: var(--brand-violet-light);" id="slider-rate-val">155.00 ¥</strong>
+                    </div>
+                </div>
+                
+                <input type="range" id="rate-slider" min="120" max="200" step="0.5" value="155" oninput="runSliderSimulation()">
+                
+                <!-- Result Ribbon -->
+                <div class="sim-results-ribbon">
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Total EUR Recovered</span>
+                        <span class="sim-stat-value" id="sim-eur-gross">€0.00</span>
+                    </div>
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Net Profit in Euros</span>
+                        <span class="sim-stat-value" style="color: var(--accent-profit);" id="sim-eur-net">+€0.00</span>
+                    </div>
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Net ROI (%)</span>
+                        <span class="sim-stat-value" style="color: var(--accent-profit);" id="sim-roi-val">+0.0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Ledger (My Revolut Buys) -->
+    <div class="tab-panel" id="tab-ledger">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">My Revolut Purchases Ledger</h2>
+                    <p class="card-desc">Log your conversions to track your average purchase price (PMC)</p>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
+                    <button class="btn btn-primary" onclick="openAddModal()">+ Log Buy</button>
+                </div>
+            </div>
+
+            <div class="table-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>EUR Spent</th>
+                            <th>JPY Bought</th>
+                            <th>Buy Rate</th>
+                            <th>Notes</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-rows">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: var(--surface-input); font-weight: 700;">
+                            <td>Total Position:</td>
+                            <td class="mono" id="foot-eur">€0.00</td>
+                            <td class="mono" style="color: var(--accent-profit);" id="foot-jpy">¥0</td>
+                            <td class="mono" id="foot-pmc">--</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: Strategy Planner -->
+    <div class="tab-panel" id="tab-strategy">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Revolut Accumulation Limit Ladder</h2>
+                    <p class="card-desc">Accumulate Yen gradually when EUR/JPY spikes, then prepare to sell when Yen rallies</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label>Accumulation Mode</label>
+                    <select id="strat-profile" onchange="calcStrategyLadder()">
+                        <option value="ladder">Aggressive Limit Ladder (40% Spot + 2 Limits)</option>
+                        <option value="periodic">Periodic DCA (4 Equal Tranches)</option>
+                        <option value="monthly">Monthly DCA (6 Progressive Tranches)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Limit Spread (+¥ above spot)</label>
+                    <input type="number" id="strat-spread" value="1.50" step="0.25" min="0.25" oninput="calcStrategyLadder()">
+                </div>
+            </div>
+
+            <div class="table-box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tranche</th>
+                            <th>Condition / Target</th>
+                            <th>EUR Allocation</th>
+                            <th>Target Rate</th>
+                            <th>Expected JPY</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="strat-rows">
+                        <!-- Strategy rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>EUR/JPY PAC Speculator • Daily & Intraday Rates • 1D, 1W, 1M, 3M, 1Y, 5Y.</p>
+    </footer>
+</div>
+
+<!-- SMARTPHONE NATIVE BOTTOM APP NAVIGATION BAR (< 768px) -->
+<nav class="mobile-bottom-nav">
+    <button class="mob-nav-item active" id="mob-nav-market" onclick="switchTab('market')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18M18 9l-5 5-4-4-6 6"/></svg>
+        <span>Chart</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-forecast" onclick="switchTab('forecast')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M2 12h5l3 7 4-14 3 7h5"/></svg>
+        <span>Simulator</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-ledger" onclick="switchTab('ledger')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Buys</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-strategy" onclick="switchTab('strategy')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Ladder</span>
+    </button>
+</nav>
+
+<!-- Modal: Add / Edit Transaction -->
+<div class="modal-bg" id="modal-tx">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 style="font-size: 1.1rem; font-weight: 700;" id="modal-tx-title">Log Revolut Conversion</h3>
+            <button class="close-btn" onclick="closeAddModal()">&times;</button>
+        </div>
+        <form onsubmit="saveTransaction(event)">
+            <input type="hidden" id="form-id">
+            <div class="field" style="margin-bottom: 12px;">
+                <label>Date</label>
+                <input type="date" id="form-date" required>
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+                <label>EUR Spent (€)</label>
+                <input type="number" id="form-eur" step="0.01" min="1" required placeholder="500" oninput="modalAutoCalcJPY()">
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+                <label>Exchange Rate (¥ / €)</label>
+                <input type="number" id="form-rate" step="0.01" min="50" required placeholder="184.50" oninput="modalAutoCalcJPY()">
+            </div>
+            <div class="field" style="margin-bottom: 12px;">
+                <label>JPY Received (¥)</label>
+                <input type="number" id="form-jpy" step="1" min="10" required placeholder="92250" oninput="modalAutoCalcRate()">
+            </div>
+            <div class="field" style="margin-bottom: 18px;">
+                <label>Notes / Tag</label>
+                <input type="text" id="form-notes" placeholder="e.g. Tranche 1, Revolut Limit Hit">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" class="btn" onclick="closeAddModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Conversion</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Backup -->
+<div class="modal-bg" id="modal-bk">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Backup & Restore</h3>
+            <button class="close-btn" onclick="closeBackupModal()">&times;</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                All data is stored directly in your browser's LocalStorage. You can export a JSON backup to transfer to another device.
+            </p>
+            <button class="btn btn-primary" onclick="exportJSON()">Download JSON Backup</button>
+            <div>
+                <label style="font-size: 0.725rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Restore from JSON file:</label>
+                <input type="file" id="bk-file" accept=".json" onchange="importJSON(event)" style="margin-top: 6px; font-size: 0.8rem;">
+            </div>
+            <hr style="border: none; border-top: 1px solid var(--border);">
+            <div style="display: flex; gap: 8px; justify-content: space-between;">
+                <button class="btn btn-sm" onclick="loadDemoData()">Load Demo</button>
+                <button class="btn btn-danger btn-sm" onclick="resetData()">Reset All</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ==========================================================
+       REAL HISTORICAL DATASET (1450 DAILY TRADING DAYS 2020-2026)
+       ========================================================== */
+    const EMBEDDED_REAL_RATES = [["2022-12-30", 140.66], ["2023-01-02", 139.62], ["2023-01-03", 137.93], ["2023-01-04", 138.74], ["2023-01-05", 140.95], ["2023-01-06", 141.3], ["2023-01-09", 141.35], ["2023-01-10", 141.92], ["2023-01-11", 142.61], ["2023-01-12", 140.61], ["2023-01-13", 139.02], ["2023-01-16", 138.92], ["2023-01-17", 139.5], ["2023-01-18", 139.79], ["2023-01-19", 139.02], ["2023-01-20", 140.86], ["2023-01-23", 141.65], ["2023-01-24", 141.47], ["2023-01-25", 141.17], ["2023-01-26", 141.38], ["2023-01-27", 141.1], ["2023-01-30", 141.79], ["2023-01-31", 141.27], ["2023-02-01", 141.37], ["2023-02-02", 141.12], ["2023-02-03", 140.45], ["2023-02-06", 142.41], ["2023-02-07", 141.3], ["2023-02-08", 140.81], ["2023-02-09", 140.8], ["2023-02-10", 139.88], ["2023-02-13", 141.65], ["2023-02-14", 142.14], ["2023-02-15", 143.05], ["2023-02-16", 143.31], ["2023-02-17", 143.18], ["2023-02-20", 143.09], ["2023-02-21", 143.76], ["2023-02-22", 143.24], ["2023-02-23", 143.32], ["2023-02-24", 143.55], ["2023-02-27", 143.88], ["2023-02-28", 145.23], ["2023-03-01", 144.82], ["2023-03-02", 145.07], ["2023-03-03", 144.55], ["2023-03-06", 144.64], ["2023-03-07", 145.21], ["2023-03-08", 144.7], ["2023-03-09", 143.82], ["2023-03-10", 144.7], ["2023-03-13", 141.96], ["2023-03-14", 144.09], ["2023-03-15", 139.51], ["2023-03-16", 140.18], ["2023-03-17", 140.57], ["2023-03-20", 140.77], ["2023-03-21", 142.63], ["2023-03-22", 143.13], ["2023-03-23", 142.87], ["2023-03-24", 139.85], ["2023-03-27", 141.64], ["2023-03-28", 141.69], ["2023-03-29", 143.58], ["2023-03-30", 144.42], ["2023-03-31", 144.83], ["2023-04-03", 144.51], ["2023-04-04", 144.94], ["2023-04-05", 143.74], ["2023-04-06", 143.49], ["2023-04-11", 145.28], ["2023-04-12", 146.09], ["2023-04-13", 146.81], ["2023-04-14", 146.6], ["2023-04-17", 146.97], ["2023-04-18", 146.89], ["2023-04-19", 147.24], ["2023-04-20", 147.46], ["2023-04-21", 146.92], ["2023-04-24", 148.17], ["2023-04-25", 147.91], ["2023-04-26", 147.67], ["2023-04-27", 147.16], ["2023-04-28", 149.35], ["2023-05-02", 150.7], ["2023-05-03", 149.66], ["2023-05-04", 148.92], ["2023-05-05", 147.8], ["2023-05-08", 149.15], ["2023-05-09", 147.97], ["2023-05-10", 148.18], ["2023-05-11", 146.54], ["2023-05-12", 147.02], ["2023-05-15", 148.15], ["2023-05-16", 147.89], ["2023-05-17", 148.31], ["2023-05-18", 149.08], ["2023-05-19", 149.55], ["2023-05-22", 149.64], ["2023-05-23", 149.2], ["2023-05-24", 149.3], ["2023-05-25", 149.63], ["2023-05-26", 150.24], ["2023-05-29", 150.29], ["2023-05-30", 150.01], ["2023-05-31", 149.13], ["2023-06-01", 149.25], ["2023-06-02", 149.46], ["2023-06-05", 149.96], ["2023-06-06", 149.09], ["2023-06-07", 149.42], ["2023-06-08", 149.98], ["2023-06-09", 150.24], ["2023-06-12", 150.03], ["2023-06-13", 150.62], ["2023-06-14", 151.21], ["2023-06-15", 152.86], ["2023-06-16", 154.65], ["2023-06-19", 154.94], ["2023-06-20", 154.51], ["2023-06-21", 154.89], ["2023-06-22", 156.05], ["2023-06-23", 155.84], ["2023-06-26", 156.41], ["2023-06-27", 157.14], ["2023-06-28", 157.82], ["2023-06-29", 157.74], ["2023-06-30", 157.16], ["2023-07-03", 157.81], ["2023-07-04", 157.34], ["2023-07-05", 157.26], ["2023-07-06", 156.57], ["2023-07-07", 156.01], ["2023-07-10", 155.73], ["2023-07-11", 154.27], ["2023-07-12", 153.84], ["2023-07-13", 154.84], ["2023-07-14", 155.51], ["2023-07-17", 155.38], ["2023-07-18", 155.4], ["2023-07-19", 156.76], ["2023-07-20", 156.35], ["2023-07-21", 157.63], ["2023-07-24", 156.47], ["2023-07-25", 156.18], ["2023-07-26", 155.3], ["2023-07-27", 155.95], ["2023-07-28", 153.35], ["2023-07-31", 156.73], ["2023-08-01", 156.85], ["2023-08-02", 156.88], ["2023-08-03", 156.24], ["2023-08-04", 156.11], ["2023-08-07", 156.21], ["2023-08-08", 156.55], ["2023-08-09", 157.35], ["2023-08-10", 158.43], ["2023-08-11", 158.97], ["2023-08-14", 158.68], ["2023-08-15", 159.04], ["2023-08-16", 159.07], ["2023-08-17", 158.88], ["2023-08-18", 158.11], ["2023-08-21", 159.15], ["2023-08-22", 158.7], ["2023-08-23", 157.28], ["2023-08-24", 157.96], ["2023-08-25", 157.75], ["2023-08-28", 158.35], ["2023-08-29", 158.93], ["2023-08-30", 159.15], ["2023-08-31", 158.49], ["2023-09-01", 157.47], ["2023-09-04", 158.11], ["2023-09-05", 158.2], ["2023-09-06", 158.18], ["2023-09-07", 157.7], ["2023-09-08", 157.84], ["2023-09-11", 157.16], ["2023-09-12", 157.42], ["2023-09-13", 158.28], ["2023-09-14", 158.13], ["2023-09-15", 157.5], ["2023-09-18", 157.44], ["2023-09-19", 158.2], ["2023-09-20", 158.28], ["2023-09-21", 157.34], ["2023-09-22", 157.87], ["2023-09-25", 158.08], ["2023-09-26", 157.87], ["2023-09-27", 157.2], ["2023-09-28", 157.33], ["2023-09-29", 158.1], ["2023-10-02", 157.67], ["2023-10-03", 157.01], ["2023-10-04", 156.48], ["2023-10-05", 156.71], ["2023-10-06", 157.47], ["2023-10-09", 157.06], ["2023-10-10", 157.71], ["2023-10-11", 157.87], ["2023-10-12", 158.35], ["2023-10-13", 157.44], ["2023-10-16", 157.54], ["2023-10-17", 158.03], ["2023-10-18", 158.1], ["2023-10-19", 158.21], ["2023-10-20", 158.8], ["2023-10-23", 158.91], ["2023-10-24", 159.26], ["2023-10-25", 158.55], ["2023-10-26", 158.48], ["2023-10-27", 158.08], ["2023-10-30", 158.8], ["2023-10-31", 160.3], ["2023-11-01", 159.33], ["2023-11-02", 159.89], ["2023-11-03", 159.87], ["2023-11-06", 160.87], ["2023-11-07", 160.77], ["2023-11-08", 160.97], ["2023-11-09", 161.57], ["2023-11-10", 161.77], ["2023-11-13", 161.96], ["2023-11-14", 162.67], ["2023-11-15", 163.39], ["2023-11-16", 164.05], ["2023-11-17", 162.29], ["2023-11-20", 162.12], ["2023-11-21", 161.61], ["2023-11-22", 162.25], ["2023-11-23", 162.98], ["2023-11-24", 163.3], ["2023-11-27", 162.86], ["2023-11-28", 162.74], ["2023-11-29", 162.12], ["2023-11-30", 161.19], ["2023-12-01", 161.14], ["2023-12-04", 159.47], ["2023-12-05", 159.13], ["2023-12-06", 158.7], ["2023-12-07", 156.18], ["2023-12-08", 155.53], ["2023-12-11", 157.54], ["2023-12-12", 156.84], ["2023-12-13", 157.13], ["2023-12-14", 154.8], ["2023-12-15", 155.15], ["2023-12-18", 155.95], ["2023-12-19", 158.2], ["2023-12-20", 157.12], ["2023-12-21", 156.79], ["2023-12-22", 156.66], ["2023-12-27", 157.81], ["2023-12-28", 156.57], ["2023-12-29", 156.33], ["2024-01-02", 155.68], ["2024-01-03", 156.16], ["2024-01-04", 157.91], ["2024-01-05", 158.57], ["2024-01-08", 158.19], ["2024-01-09", 157.63], ["2024-01-10", 159.03], ["2024-01-11", 159.71], ["2024-01-12", 159.17], ["2024-01-15", 159.67], ["2024-01-16", 159.64], ["2024-01-17", 160.65], ["2024-01-18", 160.89], ["2024-01-19", 161.17], ["2024-01-22", 160.95], ["2024-01-23", 160.88], ["2024-01-24", 160.46], ["2024-01-25", 160.81], ["2024-01-26", 160.62], ["2024-01-29", 160.13], ["2024-01-30", 159.97], ["2024-01-31", 160.19], ["2024-02-01", 158.96], ["2024-02-02", 159.58], ["2024-02-05", 159.72], ["2024-02-06", 159.56], ["2024-02-07", 159.71], ["2024-02-08", 160.55], ["2024-02-09", 161.0], ["2024-02-12", 160.51], ["2024-02-13", 161.17], ["2024-02-14", 161.28], ["2024-02-15", 161.26], ["2024-02-16", 161.88], ["2024-02-19", 161.59], ["2024-02-20", 162.18], ["2024-02-21", 162.12], ["2024-02-22", 163.12], ["2024-02-23", 162.91], ["2024-02-26", 163.38], ["2024-02-27", 163.04], ["2024-02-28", 162.87], ["2024-02-29", 162.53], ["2024-03-01", 162.82], ["2024-03-04", 163.22], ["2024-03-05", 163.01], ["2024-03-06", 162.67], ["2024-03-07", 161.09], ["2024-03-08", 160.99], ["2024-03-11", 160.43], ["2024-03-12", 161.39], ["2024-03-13", 161.83], ["2024-03-14", 161.7], ["2024-03-15", 162.03], ["2024-03-18", 162.51], ["2024-03-19", 163.37], ["2024-03-20", 164.54], ["2024-03-21", 164.96], ["2024-03-22", 163.74], ["2024-03-25", 163.78], ["2024-03-26", 164.4], ["2024-03-27", 163.52], ["2024-03-28", 163.45], ["2024-04-02", 163.01], ["2024-04-03", 163.66], ["2024-04-04", 164.69], ["2024-04-05", 164.1], ["2024-04-08", 164.43], ["2024-04-09", 164.97], ["2024-04-10", 164.89], ["2024-04-11", 164.18], ["2024-04-12", 163.16], ["2024-04-15", 164.05], ["2024-04-16", 164.54], ["2024-04-17", 164.54], ["2024-04-18", 164.82], ["2024-04-19", 164.68], ["2024-04-22", 164.51], ["2024-04-23", 165.23], ["2024-04-24", 165.57], ["2024-04-25", 166.76], ["2024-04-26", 168.03], ["2024-04-29", 167.53], ["2024-04-30", 168.27], ["2024-05-02", 165.63], ["2024-05-03", 164.62], ["2024-05-06", 165.7], ["2024-05-07", 166.45], ["2024-05-08", 167.15], ["2024-05-09", 167.32], ["2024-05-10", 167.87], ["2024-05-13", 168.25], ["2024-05-14", 168.89], ["2024-05-15", 168.43], ["2024-05-16", 168.33], ["2024-05-17", 168.96], ["2024-05-20", 169.25], ["2024-05-21", 169.86], ["2024-05-22", 169.54], ["2024-05-23", 169.9], ["2024-05-24", 170.28], ["2024-05-27", 170.07], ["2024-05-28", 170.54], ["2024-05-29", 170.74], ["2024-05-30", 169.5], ["2024-05-31", 170.52], ["2024-06-03", 170.09], ["2024-06-04", 168.29], ["2024-06-05", 169.72], ["2024-06-06", 169.74], ["2024-06-07", 169.52], ["2024-06-10", 168.74], ["2024-06-11", 168.46], ["2024-06-12", 169.35], ["2024-06-13", 169.58], ["2024-06-14", 167.8], ["2024-06-17", 169.11], ["2024-06-18", 169.41], ["2024-06-19", 169.78], ["2024-06-20", 169.82], ["2024-06-21", 169.82], ["2024-06-24", 171.17], ["2024-06-25", 170.84], ["2024-06-26", 171.42], ["2024-06-27", 171.66], ["2024-06-28", 171.94], ["2024-07-01", 173.15], ["2024-07-02", 173.31], ["2024-07-03", 174.18], ["2024-07-04", 173.84], ["2024-07-05", 174.06], ["2024-07-08", 174.37], ["2024-07-09", 174.2], ["2024-07-10", 174.79], ["2024-07-11", 175.39], ["2024-07-12", 172.87], ["2024-07-15", 172.34], ["2024-07-16", 172.65], ["2024-07-17", 171.21], ["2024-07-18", 171.02], ["2024-07-19", 171.61], ["2024-07-22", 170.8], ["2024-07-23", 169.64], ["2024-07-24", 167.23], ["2024-07-25", 165.62], ["2024-07-26", 167.84], ["2024-07-29", 166.44], ["2024-07-30", 167.61], ["2024-07-31", 162.76], ["2024-08-01", 162.66], ["2024-08-02", 161.37], ["2024-08-05", 155.98], ["2024-08-06", 158.29], ["2024-08-07", 160.62], ["2024-08-08", 159.74], ["2024-08-09", 160.33], ["2024-08-12", 161.25], ["2024-08-13", 161.17], ["2024-08-14", 161.98], ["2024-08-15", 162.14], ["2024-08-16", 162.72], ["2024-08-19", 161.22], ["2024-08-20", 162.18], ["2024-08-21", 162.26], ["2024-08-22", 162.64], ["2024-08-23", 162.37], ["2024-08-26", 160.94], ["2024-08-27", 161.24], ["2024-08-28", 160.57], ["2024-08-29", 160.36], ["2024-08-30", 161.19], ["2024-09-02", 162.56], ["2024-09-03", 161.26], ["2024-09-04", 160.26], ["2024-09-05", 159.2], ["2024-09-06", 158.93], ["2024-09-09", 158.53], ["2024-09-10", 157.81], ["2024-09-11", 156.6], ["2024-09-12", 157.02], ["2024-09-13", 156.17], ["2024-09-16", 155.66], ["2024-09-17", 156.71], ["2024-09-18", 157.94], ["2024-09-19", 159.53], ["2024-09-20", 161.08], ["2024-09-23", 159.58], ["2024-09-24", 160.14], ["2024-09-25", 161.49], ["2024-09-26", 160.78], ["2024-09-27", 159.63], ["2024-09-30", 159.82], ["2024-10-01", 159.37], ["2024-10-02", 160.26], ["2024-10-03", 161.98], ["2024-10-04", 161.69], ["2024-10-07", 162.63], ["2024-10-08", 162.49], ["2024-10-09", 162.97], ["2024-10-10", 162.85], ["2024-10-11", 162.94], ["2024-10-14", 163.39], ["2024-10-15", 162.85], ["2024-10-16", 162.57], ["2024-10-17", 162.5], ["2024-10-18", 162.75], ["2024-10-21", 162.79], ["2024-10-22", 163.22], ["2024-10-23", 164.66], ["2024-10-24", 164.12], ["2024-10-25", 164.45], ["2024-10-28", 165.18], ["2024-10-29", 165.66], ["2024-10-30", 165.91], ["2024-10-31", 166.3], ["2024-11-01", 165.54], ["2024-11-04", 165.47], ["2024-11-05", 165.93], ["2024-11-06", 165.05], ["2024-11-07", 165.71], ["2024-11-08", 164.18], ["2024-11-11", 163.82], ["2024-11-12", 163.71], ["2024-11-13", 164.71], ["2024-11-14", 164.24], ["2024-11-15", 164.36], ["2024-11-18", 163.74], ["2024-11-19", 162.71], ["2024-11-20", 164.42], ["2024-11-21", 162.53], ["2024-11-22", 160.84], ["2024-11-25", 161.64], ["2024-11-26", 161.13], ["2024-11-27", 159.65], ["2024-11-28", 159.89], ["2024-11-29", 158.64], ["2024-12-02", 157.74], ["2024-12-03", 157.3], ["2024-12-04", 158.59], ["2024-12-05", 158.52], ["2024-12-06", 159.25], ["2024-12-09", 159.4], ["2024-12-10", 159.74], ["2024-12-11", 160.35], ["2024-12-12", 159.6], ["2024-12-13", 161.45], ["2024-12-16", 161.73], ["2024-12-17", 161.63], ["2024-12-18", 161.52], ["2024-12-19", 163.07], ["2024-12-20", 162.89], ["2024-12-23", 163.36], ["2024-12-24", 163.25], ["2024-12-27", 164.65], ["2024-12-30", 164.57], ["2024-12-31", 163.06], ["2025-01-02", 162.04], ["2025-01-03", 161.77], ["2025-01-06", 163.25], ["2025-01-07", 163.86], ["2025-01-08", 162.94], ["2025-01-09", 162.56], ["2025-01-10", 162.86], ["2025-01-13", 160.22], ["2025-01-14", 161.63], ["2025-01-15", 161.75], ["2025-01-16", 160.46], ["2025-01-17", 160.23], ["2025-01-20", 161.36], ["2025-01-21", 161.26], ["2025-01-22", 162.72], ["2025-01-23", 162.58], ["2025-01-24", 163.9], ["2025-01-27", 162.21], ["2025-01-28", 161.86], ["2025-01-29", 161.5], ["2025-01-30", 160.32], ["2025-01-31", 160.99], ["2025-02-03", 158.87], ["2025-02-04", 160.52], ["2025-02-05", 159.25], ["2025-02-06", 157.95], ["2025-02-07", 157.77], ["2025-02-10", 156.92], ["2025-02-11", 157.28], ["2025-02-12", 159.22], ["2025-02-13", 159.79], ["2025-02-14", 160.09], ["2025-02-17", 158.67], ["2025-02-18", 158.55], ["2025-02-19", 158.41], ["2025-02-20", 156.6], ["2025-02-21", 157.46], ["2025-02-24", 156.81], ["2025-02-25", 157.19], ["2025-02-26", 156.7], ["2025-02-27", 156.73], ["2025-02-28", 156.96], ["2025-03-03", 158.33], ["2025-03-04", 156.5], ["2025-03-05", 160.09], ["2025-03-06", 159.24], ["2025-03-07", 160.35], ["2025-03-10", 159.39], ["2025-03-11", 161.52], ["2025-03-12", 162.23], ["2025-03-13", 160.64], ["2025-03-14", 161.88], ["2025-03-17", 162.26], ["2025-03-18", 163.5], ["2025-03-19", 163.27], ["2025-03-20", 160.85], ["2025-03-21", 160.99], ["2025-03-24", 162.15], ["2025-03-25", 162.32], ["2025-03-26", 162.2], ["2025-03-27", 162.55], ["2025-03-28", 162.64], ["2025-03-31", 161.6], ["2025-04-01", 160.93], ["2025-04-02", 161.22], ["2025-04-03", 162.17], ["2025-04-04", 160.56], ["2025-04-07", 160.58], ["2025-04-08", 160.65], ["2025-04-09", 159.61], ["2025-04-10", 161.28], ["2025-04-11", 162.07], ["2025-04-14", 162.97], ["2025-04-15", 161.85], ["2025-04-16", 162.09], ["2025-04-17", 161.98], ["2025-04-22", 161.05], ["2025-04-23", 161.68], ["2025-04-24", 162.16], ["2025-04-25", 162.8], ["2025-04-28", 162.8], ["2025-04-29", 162.28], ["2025-04-30", 162.68], ["2025-05-02", 163.93], ["2025-05-05", 163.19], ["2025-05-06", 161.64], ["2025-05-07", 162.89], ["2025-05-08", 163.45], ["2025-05-09", 163.36], ["2025-05-12", 164.46], ["2025-05-13", 164.61], ["2025-05-14", 164.01], ["2025-05-15", 163.3], ["2025-05-16", 163.05], ["2025-05-19", 163.26], ["2025-05-20", 162.59], ["2025-05-21", 162.76], ["2025-05-22", 162.19], ["2025-05-23", 161.13], ["2025-05-26", 162.63], ["2025-05-27", 163.72], ["2025-05-28", 163.43], ["2025-05-29", 163.47], ["2025-05-30", 162.96], ["2025-06-02", 162.98], ["2025-06-03", 163.0], ["2025-06-04", 164.15], ["2025-06-05", 163.66], ["2025-06-06", 164.62], ["2025-06-09", 164.88], ["2025-06-10", 165.23], ["2025-06-11", 166.17], ["2025-06-12", 166.64], ["2025-06-13", 165.94], ["2025-06-16", 166.89], ["2025-06-17", 167.35], ["2025-06-18", 166.67], ["2025-06-19", 167.2], ["2025-06-20", 167.67], ["2025-06-23", 169.27], ["2025-06-24", 168.27], ["2025-06-25", 169.07], ["2025-06-26", 168.92], ["2025-06-27", 169.24], ["2025-06-30", 169.17], ["2025-07-01", 168.7], ["2025-07-02", 169.45], ["2025-07-03", 169.58], ["2025-07-04", 169.92], ["2025-07-07", 170.71], ["2025-07-08", 171.7], ["2025-07-09", 171.63], ["2025-07-10", 171.33], ["2025-07-11", 171.81], ["2025-07-14", 172.27], ["2025-07-15", 172.58], ["2025-07-16", 172.56], ["2025-07-17", 172.28], ["2025-07-18", 172.94], ["2025-07-21", 172.02], ["2025-07-22", 172.17], ["2025-07-23", 171.53], ["2025-07-24", 172.22], ["2025-07-25", 173.11], ["2025-07-28", 172.65], ["2025-07-29", 171.58], ["2025-07-30", 170.96], ["2025-07-31", 171.52], ["2025-08-01", 171.61], ["2025-08-04", 170.45], ["2025-08-05", 170.42], ["2025-08-06", 171.22], ["2025-08-07", 171.6], ["2025-08-08", 172.18], ["2025-08-11", 171.86], ["2025-08-12", 172.3], ["2025-08-13", 172.47], ["2025-08-14", 171.3], ["2025-08-15", 171.81], ["2025-08-18", 172.27], ["2025-08-19", 172.67], ["2025-08-20", 171.77], ["2025-08-21", 172.09], ["2025-08-22", 172.6], ["2025-08-25", 172.36], ["2025-08-26", 171.77], ["2025-08-27", 171.63], ["2025-08-28", 171.48], ["2025-08-29", 171.72], ["2025-09-01", 172.47], ["2025-09-02", 173.1], ["2025-09-03", 173.17], ["2025-09-04", 172.76], ["2025-09-05", 173.09], ["2025-09-08", 173.39], ["2025-09-09", 172.36], ["2025-09-10", 172.67], ["2025-09-11", 172.88], ["2025-09-12", 173.33], ["2025-09-15", 173.38], ["2025-09-16", 173.55], ["2025-09-17", 173.28], ["2025-09-18", 174.24], ["2025-09-19", 173.79], ["2025-09-22", 174.17], ["2025-09-23", 174.3], ["2025-09-24", 174.51], ["2025-09-25", 174.7], ["2025-09-26", 174.79], ["2025-09-29", 174.38], ["2025-09-30", 173.76], ["2025-10-01", 172.47], ["2025-10-02", 172.53], ["2025-10-03", 172.9], ["2025-10-06", 175.22], ["2025-10-07", 176.05], ["2025-10-08", 177.53], ["2025-10-09", 177.4], ["2025-10-10", 176.46], ["2025-10-13", 175.98], ["2025-10-14", 175.72], ["2025-10-15", 176.13], ["2025-10-16", 176.23], ["2025-10-17", 175.7], ["2025-10-20", 175.71], ["2025-10-21", 176.45], ["2025-10-22", 175.92], ["2025-10-23", 176.94], ["2025-10-24", 177.55], ["2025-10-27", 177.93], ["2025-10-28", 177.11], ["2025-10-29", 177.07], ["2025-10-30", 178.37], ["2025-10-31", 178.14], ["2025-11-03", 177.57], ["2025-11-04", 176.39], ["2025-11-05", 176.67], ["2025-11-06", 177.15], ["2025-11-07", 176.99], ["2025-11-10", 178.31], ["2025-11-11", 178.46], ["2025-11-12", 179.19], ["2025-11-13", 179.57], ["2025-11-14", 179.22], ["2025-11-17", 179.57], ["2025-11-18", 179.94], ["2025-11-19", 180.85], ["2025-11-20", 181.47], ["2025-11-21", 180.56], ["2025-11-24", 181.22], ["2025-11-25", 180.42], ["2025-11-26", 181.09], ["2025-11-27", 181.11], ["2025-11-28", 180.57], ["2025-12-01", 180.28], ["2025-12-02", 181.26], ["2025-12-03", 181.28], ["2025-12-04", 180.55], ["2025-12-05", 180.76], ["2025-12-08", 181.29], ["2025-12-09", 181.96], ["2025-12-10", 182.32], ["2025-12-11", 182.25], ["2025-12-12", 182.99], ["2025-12-15", 182.32], ["2025-12-16", 182.07], ["2025-12-17", 182.38], ["2025-12-18", 182.55], ["2025-12-19", 184.15], ["2025-12-22", 184.77], ["2025-12-23", 183.89], ["2025-12-24", 183.83], ["2025-12-29", 183.97], ["2025-12-30", 183.48], ["2025-12-31", 184.09], ["2026-01-02", 183.94], ["2026-01-05", 182.93], ["2026-01-06", 183.14], ["2026-01-07", 182.91], ["2026-01-08", 182.97], ["2026-01-09", 183.52], ["2026-01-12", 184.42], ["2026-01-13", 185.12], ["2026-01-14", 184.82], ["2026-01-15", 184.31], ["2026-01-16", 183.67], ["2026-01-19", 183.69], ["2026-01-20", 185.18], ["2026-01-21", 185.23], ["2026-01-22", 185.88], ["2026-01-23", 185.71], ["2026-01-26", 182.52], ["2026-01-27", 182.92], ["2026-01-28", 182.76], ["2026-01-29", 183.48], ["2026-01-30", 183.59], ["2026-02-02", 183.59], ["2026-02-03", 183.92], ["2026-02-04", 185.15], ["2026-02-05", 185.11], ["2026-02-06", 185.27], ["2026-02-09", 185.65], ["2026-02-10", 184.51], ["2026-02-11", 182.79], ["2026-02-12", 182.52], ["2026-02-13", 181.83], ["2026-02-16", 181.79], ["2026-02-17", 181.06], ["2026-02-18", 181.99], ["2026-02-19", 182.05], ["2026-02-20", 182.63], ["2026-02-23", 182.44], ["2026-02-24", 183.53], ["2026-02-25", 184.7], ["2026-02-26", 184.37], ["2026-02-27", 184.13], ["2026-03-02", 184.19], ["2026-03-03", 182.98], ["2026-03-04", 183.02], ["2026-03-05", 183.03], ["2026-03-06", 182.57], ["2026-03-09", 183.15], ["2026-03-10", 183.67], ["2026-03-11", 183.63], ["2026-03-12", 183.43], ["2026-03-13", 182.85], ["2026-03-16", 182.66], ["2026-03-17", 183.29], ["2026-03-18", 183.49], ["2026-03-19", 182.46], ["2026-03-20", 183.46], ["2026-03-23", 183.86], ["2026-03-24", 183.91], ["2026-03-25", 184.27], ["2026-03-26", 184.19], ["2026-03-27", 184.16], ["2026-03-30", 183.12], ["2026-03-31", 183.39], ["2026-04-01", 183.73], ["2026-04-02", 183.94], ["2026-04-07", 184.73], ["2026-04-08", 185.13], ["2026-04-09", 185.7], ["2026-04-10", 186.43], ["2026-04-13", 186.75], ["2026-04-14", 187.33], ["2026-04-15", 187.41], ["2026-04-16", 187.31], ["2026-04-17", 187.72], ["2026-04-20", 186.88], ["2026-04-21", 187.14], ["2026-04-22", 186.81], ["2026-04-23", 186.5], ["2026-04-24", 186.71], ["2026-04-27", 187.06], ["2026-04-28", 186.58], ["2026-04-29", 187.05], ["2026-04-30", 183.21], ["2026-05-04", 183.83], ["2026-05-05", 184.42], ["2026-05-06", 183.74], ["2026-05-07", 184.07], ["2026-05-08", 184.37], ["2026-05-11", 184.87], ["2026-05-12", 184.98], ["2026-05-13", 184.83], ["2026-05-14", 184.83], ["2026-05-15", 184.36], ["2026-05-18", 184.93], ["2026-05-19", 184.89], ["2026-05-20", 184.48], ["2026-05-21", 184.59], ["2026-05-22", 184.53], ["2026-05-25", 185.04], ["2026-05-26", 185.22], ["2026-05-27", 185.52], ["2026-05-28", 185.24], ["2026-05-29", 185.45], ["2026-06-01", 185.74], ["2026-06-02", 186.09], ["2026-06-03", 185.66], ["2026-06-04", 186.01], ["2026-06-05", 186.08], ["2026-06-08", 184.6], ["2026-06-09", 185.35], ["2026-06-10", 185.19], ["2026-06-11", 185.21], ["2026-06-12", 185.3], ["2026-06-15", 185.93], ["2026-06-16", 185.94], ["2026-06-17", 185.82], ["2026-06-18", 184.44], ["2026-06-19", 184.88], ["2026-06-22", 185.33], ["2026-06-23", 184.02], ["2026-06-24", 183.35], ["2026-06-25", 183.57], ["2026-06-26", 184.3], ["2026-06-29", 184.62], ["2026-06-30", 185.08], ["2026-07-01", 185.21], ["2026-07-02", 184.19], ["2026-07-03", 184.48], ["2026-07-06", 185.31], ["2026-07-07", 185.09], ["2026-07-08", 185.3], ["2026-07-09", 185.72], ["2026-07-10", 185.02], ["2026-07-13", 185.23], ["2026-07-14", 185.01], ["2026-07-15", 185.22], ["2026-07-16", 185.99], ["2026-07-17", 185.65], ["2026-07-20", 185.54], ["2026-07-21", 185.82], ["2026-07-22", 186.03], ["2026-07-23", 186.23], ["2026-07-24", 186.38], ["2026-07-27", 186.37], ["2026-07-28", 186.32], ["2026-07-29", 186.27], ["2026-07-30", 186.99], ["2026-07-31", 184.03], ["2026-08-03", 180.73], ["2026-08-04", 181.26], ["2026-08-05", 182.08], ["2026-08-06", 182.17], ["2026-08-07", 182.64], ["2026-08-10", 183.31], ["2026-08-11", 183.72], ["2026-08-12", 183.67], ["2026-08-13", 183.77], ["2026-08-14", 183.93], ["2026-08-17", 184.59]];
+
+    /* ==========================================================
+       APP STATE & STORAGE
+       ========================================================== */
+    const STORAGE_KEY = 'EUR_JPY_SPECULATOR_V4';
+    const THEME_KEY = 'EUR_JPY_SPECULATOR_THEME';
+
+    let state = {
+        transactions: [],
+        budgetEUR: 3000,
+        strategyProfile: 'ladder',
+        limitSpread: 1.50
+    };
+
+    let liveSpotRate = 184.59;
+    let liveDateStr = "2026-08-17";
+    let chartInstance = null;
+    let fullRatesDataset = [...EMBEDDED_REAL_RATES];
+    let deferredPrompt = null;
+    let currentActiveTimeframe = '1M';
+    let intradayCache = { '1D': null, '1W': null };
+
+    /* ==========================================================
+       HEADER 3-DOTS DROPDOWN MENU
+       ========================================================== */
+    function toggleDropdown(e) {
+        e.stopPropagation();
+        const drop = document.getElementById('header-dropdown');
+        drop.classList.toggle('active');
+    }
+
+    function closeDropdown() {
+        const drop = document.getElementById('header-dropdown');
+        if (drop) drop.classList.remove('active');
+    }
+
+    function closeDropdownIfOutside(e) {
+        const drop = document.getElementById('header-dropdown');
+        const btn = document.getElementById('btn-dots-toggle');
+        if (drop && drop.classList.contains('active') && !drop.contains(e.target) && !btn.contains(e.target)) {
+            drop.classList.remove('active');
+        }
+    }
+
+    /* ==========================================================
+       PWA INSTALLATION & SERVICE WORKER
+       ========================================================== */
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const dropInstall = document.getElementById('drop-install-btn');
+        const dropDiv = document.getElementById('drop-install-divider');
+        if (dropInstall) dropInstall.style.display = 'flex';
+        if (dropDiv) dropDiv.style.display = 'block';
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User installed the PWA');
+                }
+                deferredPrompt = null;
+                const dropInstall = document.getElementById('drop-install-btn');
+                if (dropInstall) dropInstall.style.display = 'none';
+            });
+        } else {
+            alert('To install on iPhone / iPad:\n1. Tap the Share button in Safari\n2. Scroll down and tap "Add to Home Screen"');
+        }
+    }
+
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:' || window.location.hostname === 'localhost')) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registered', reg.scope))
+                .catch(err => console.warn('SW registration skipped:', err));
+        }
+    }
+
+    function loadState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                state = Object.assign(state, JSON.parse(saved));
+            } else {
+                state.transactions = [
+                    { id: 'demo-1', date: getRelativeDate(-45), eur: 750, rate: 182.50, jpy: 136875, notes: 'PAC Tranche 1' },
+                    { id: 'demo-2', date: getRelativeDate(-15), eur: 750, rate: 185.00, jpy: 138750, notes: 'Revolut Limit 1 Hit' }
+                ];
+                saveState();
+            }
+        } catch (e) {
+            console.error('Failed to load state', e);
+        }
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error('Failed to save state', e);
+        }
+    }
+
+    function getRelativeDate(daysOffset) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysOffset);
+        return d.toISOString().split('T')[0];
+    }
+
+    /* ==========================================================
+       THEME CONTROLLER
+       ========================================================== */
+    function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY) || 'dark';
+        applyTheme(saved);
+    }
+
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const dropLabel = document.getElementById('theme-drop-label');
+        if (dropLabel) dropLabel.innerText = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        localStorage.setItem(THEME_KEY, theme);
+        if (chartInstance && chartInstance._cachedData) {
+            renderChart(chartInstance._cachedData);
+        }
+    }
+
+    /* ==========================================================
+       SYNCHRONIZED VIEW SWITCHER
+       ========================================================== */
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        const targetPanel = document.getElementById('tab-' + tabId);
+        if (targetPanel) targetPanel.classList.add('active');
+
+        document.querySelectorAll('.desktop-nav-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+        const deskBtn = document.getElementById('desk-tab-' + tabId);
+        if (deskBtn) deskBtn.classList.add('active');
+
+        document.querySelectorAll('.mob-nav-item').forEach(item => item.classList.remove('active'));
+        const mobNavBtn = document.getElementById('mob-nav-' + tabId);
+        if (mobNavBtn) mobNavBtn.classList.add('active');
+
+        if (tabId === 'market' && chartInstance) {
+            setTimeout(() => chartInstance.resize(), 50);
+        }
+        if (tabId === 'forecast') {
+            calcForecastScenarios();
+        }
+    }
+
+    /* ==========================================================
+       LIVE MARKET API WITH FALLBACK
+       ========================================================== */
+    async function fetchLiveMarketData(isManual = false) {
+        const rateEl = document.getElementById('kpi-spot-rate');
+        const dateEl = document.getElementById('kpi-spot-date');
+
+        try {
+            // Try Yahoo Finance or Frankfurter
+            const resp = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/EURJPY=X?range=1d&interval=5m');
+            if (resp.ok) {
+                const yfData = await resp.json();
+                const quote = yfData.chart.result[0].meta.regularMarketPrice;
+                if (quote) {
+                    liveSpotRate = quote;
+                    liveDateStr = new Date().toISOString().split('T')[0];
+                    rateEl.innerText = liveSpotRate.toFixed(2) + " ¥";
+                    dateEl.innerText = "Live Market (Yahoo FX)";
+                    refreshAllViews();
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('Yahoo live feed fallback', e);
+        }
+
+        try {
+            const resp = await fetch('https://api.frankfurter.app/latest?from=EUR&to=JPY');
+            if (!resp.ok) throw new Error('Frankfurter HTTP ' + resp.status);
+            const data = await resp.json();
+
+            if (data && data.rates && data.rates.JPY) {
+                liveSpotRate = data.rates.JPY;
+                liveDateStr = data.date;
+                rateEl.innerText = liveSpotRate.toFixed(2) + " ¥";
+                dateEl.innerText = "ECB Official: " + liveDateStr;
+
+                const lastEntry = fullRatesDataset[fullRatesDataset.length - 1];
+                if (lastEntry && lastEntry[0] !== liveDateStr) {
+                    fullRatesDataset.push([liveDateStr, liveSpotRate]);
+                }
+
+                refreshAllViews();
+                return;
+            }
+        } catch (e) {
+            console.warn('Frankfurter live fetch fallback', e);
+            const last = fullRatesDataset[fullRatesDataset.length - 1];
+            liveSpotRate = last[1];
+            liveDateStr = last[0];
+            rateEl.innerText = liveSpotRate.toFixed(2) + " ¥";
+            dateEl.innerText = "ECB: " + liveDateStr;
+            refreshAllViews();
+        }
+    }
+
+    /* ==========================================================
+       FINANCIAL KPI CALCULATIONS & SPECULATIVE P&L
+       ========================================================== */
+    function refreshAllViews() {
+        renderLedger();
+        calcForecastScenarios();
+        calcStrategyLadder();
+    }
+
+    function renderLedger() {
+        const tbody = document.getElementById('ledger-rows');
+        const countBadge = document.getElementById('kpi-buys-badge');
+        const tabCount = document.getElementById('tab-count-badge');
+
+        countBadge.innerText = `${state.transactions.length} Buy${state.transactions.length === 1 ? '' : 's'}`;
+        tabCount.innerText = state.transactions.length;
+
+        let totalEURSpent = 0;
+        let totalJPYHeld = 0;
+
+        if (state.transactions.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 18px; color: var(--text-muted);">
+                No conversions logged yet. Click <strong>+ Log Buy</strong> to add a purchase.
+            </td></tr>`;
+        } else {
+            const sorted = [...state.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
+            tbody.innerHTML = sorted.map(tx => {
+                totalEURSpent += parseFloat(tx.eur) || 0;
+                totalJPYHeld += parseFloat(tx.jpy) || 0;
+
+                return `
+                    <tr>
+                        <td class="mono">${tx.date}</td>
+                        <td class="mono">${formatEUR(tx.eur)}</td>
+                        <td class="mono" style="color: var(--accent-profit); font-weight: 600;">${formatJPY(tx.jpy)}</td>
+                        <td class="mono"><strong>${parseFloat(tx.rate).toFixed(2)}</strong></td>
+                        <td style="color: var(--text-secondary);">${escapeHtml(tx.notes || '--')}</td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn btn-sm" onclick="editTx('${tx.id}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTx('${tx.id}')">Del</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Totals Footer
+        document.getElementById('foot-eur').innerText = formatEUR(totalEURSpent);
+        document.getElementById('foot-jpy').innerText = formatJPY(totalJPYHeld);
+
+        // PMC
+        const pmc = totalEURSpent > 0 ? (totalJPYHeld / totalEURSpent) : 0;
+        const pmcEl = document.getElementById('kpi-pmc');
+        const pmcDiff = document.getElementById('kpi-pmc-diff');
+        const footPmc = document.getElementById('foot-pmc');
+
+        const currentEURValue = (totalJPYHeld > 0 && liveSpotRate > 0) ? (totalJPYHeld / liveSpotRate) : 0;
+        const unrealizedProfitEUR = currentEURValue - totalEURSpent;
+        const unrealizedROI = totalEURSpent > 0 ? (unrealizedProfitEUR / totalEURSpent) * 100 : 0;
+
+        document.getElementById('kpi-jpy-count').innerText = formatJPY(totalJPYHeld);
+        document.getElementById('kpi-eur-now').innerText = formatEUR(currentEURValue);
+        document.getElementById('kpi-eur-cost').innerText = `${formatEUR(totalEURSpent)} spent`;
+
+        const profitEl = document.getElementById('kpi-profit-val');
+        const profitRoi = document.getElementById('kpi-profit-roi');
+        const profitPill = document.getElementById('kpi-pnl-pill');
+
+        if (totalEURSpent > 0) {
+            pmcEl.innerText = pmc.toFixed(2) + " ¥";
+            footPmc.innerText = pmc.toFixed(2) + " ¥";
+
+            if (unrealizedProfitEUR >= 0) {
+                profitEl.innerText = `+${formatEUR(unrealizedProfitEUR)}`;
+                profitEl.style.color = "var(--accent-profit)";
+                profitRoi.innerText = `+${unrealizedROI.toFixed(1)}% ROI`;
+                profitRoi.style.color = "var(--accent-profit)";
+                profitPill.className = "pill pill-profit";
+                profitPill.innerText = "Profit";
+                pmcDiff.innerHTML = `<span class="pill pill-profit">+${(pmc - liveSpotRate).toFixed(1)}¥ Gain</span>`;
+            } else {
+                profitEl.innerText = `${formatEUR(unrealizedProfitEUR)}`;
+                profitEl.style.color = "var(--accent-loss)";
+                profitRoi.innerText = `${unrealizedROI.toFixed(1)}% ROI`;
+                profitRoi.style.color = "var(--accent-loss)";
+                profitPill.className = "pill pill-loss";
+                profitPill.innerText = "Acc.";
+                pmcDiff.innerHTML = `<span class="pill pill-loss">${(pmc - liveSpotRate).toFixed(1)}¥ below</span>`;
+            }
+
+            const beSpread = liveSpotRate - pmc;
+            document.getElementById('stat-be-spread').innerText = `${beSpread > 0 ? '+' : ''}${beSpread.toFixed(2)} ¥`;
+        } else {
+            pmcEl.innerText = "-- ¥";
+            footPmc.innerText = "--";
+            pmcDiff.innerText = "Break-Even";
+            profitEl.innerText = "€0.00";
+            profitEl.style.color = "var(--text-primary)";
+            profitRoi.innerText = "0.0% ROI";
+            profitPill.className = "pill pill-muted";
+            profitPill.innerText = "No Buys";
+            document.getElementById('stat-be-spread').innerText = "--";
+        }
+    }
+
+    /* ==========================================================
+       YEN SPECULATION & PROFIT SCENARIO ENGINE
+       ========================================================== */
+    function updateBudgetSetting() {
+        const inputEl = document.getElementById('fc-budget');
+        const rawVal = inputEl.value;
+        if (rawVal === '' || isNaN(parseFloat(rawVal))) {
+            state.budgetEUR = 0;
+        } else {
+            state.budgetEUR = parseFloat(rawVal);
+        }
+        saveState();
+        calcForecastScenarios();
+        calcStrategyLadder();
+    }
+
+    function calcForecastScenarios() {
+        const budgetInput = document.getElementById('fc-budget');
+        if (budgetInput && budgetInput.value === '' && state.budgetEUR > 0) {
+            budgetInput.value = state.budgetEUR;
+        }
+
+        const budget = (budgetInput && budgetInput.value !== '') ? parseFloat(budgetInput.value) || 0 : (state.budgetEUR || 3000);
+
+        let totalEURSpent = 0;
+        let totalJPYHeld = 0;
+        state.transactions.forEach(t => {
+            totalEURSpent += parseFloat(t.eur) || 0;
+            totalJPYHeld += parseFloat(t.jpy) || 0;
+        });
+
+        document.getElementById('fc-invested-eur').value = formatEUR(totalEURSpent);
+        document.getElementById('fc-held-jpy').value = formatJPY(totalJPYHeld);
+
+        const effectiveJPY = totalJPYHeld > 0 ? totalJPYHeld : (budget * liveSpotRate);
+        const effectiveCost = totalEURSpent > 0 ? totalEURSpent : (budget > 0 ? budget : 1);
+
+        // Target 1: 150.00 ¥
+        const t1Rate = 150.00;
+        const t1EUR = effectiveJPY / t1Rate;
+        const t1Profit = t1EUR - effectiveCost;
+        const t1ROI = (t1Profit / effectiveCost) * 100;
+
+        document.getElementById('scen-t1-rate').innerText = "150.00 ¥ (Major Surge)";
+        document.getElementById('scen-t1-eur').innerText = formatEUR(t1EUR);
+        document.getElementById('scen-t1-profit').innerText = `+${formatEUR(t1Profit)}`;
+        document.getElementById('scen-t1-roi').innerText = `+${t1ROI.toFixed(1)}% Net ROI`;
+
+        // Target 2: 165.00 ¥
+        const t2Rate = 165.00;
+        const t2EUR = effectiveJPY / t2Rate;
+        const t2Profit = t2EUR - effectiveCost;
+        const t2ROI = (t2Profit / effectiveCost) * 100;
+
+        document.getElementById('scen-t2-rate').innerText = "165.00 ¥ (Moderate Rally)";
+        document.getElementById('scen-t2-eur').innerText = formatEUR(t2EUR);
+        document.getElementById('scen-t2-profit').innerText = `${t2Profit >= 0 ? '+' : ''}${formatEUR(t2Profit)}`;
+        document.getElementById('scen-t2-roi').innerText = `${t2ROI >= 0 ? '+' : ''}${t2ROI.toFixed(1)}% Net ROI`;
+
+        runSliderSimulation();
+    }
+
+    function runSliderSimulation() {
+        const exitRate = parseFloat(document.getElementById('rate-slider').value) || 155.00;
+        document.getElementById('slider-rate-val').innerText = exitRate.toFixed(2) + " ¥";
+
+        const budgetInput = document.getElementById('fc-budget');
+        const budget = (budgetInput && budgetInput.value !== '') ? parseFloat(budgetInput.value) || 0 : (state.budgetEUR || 3000);
+
+        let totalEURSpent = 0;
+        let totalJPYHeld = 0;
+        state.transactions.forEach(t => {
+            totalEURSpent += parseFloat(t.eur) || 0;
+            totalJPYHeld += parseFloat(t.jpy) || 0;
+        });
+
+        const effectiveJPY = totalJPYHeld > 0 ? totalJPYHeld : (budget * liveSpotRate);
+        const effectiveCost = totalEURSpent > 0 ? totalEURSpent : (budget > 0 ? budget : 1);
+
+        const grossEUR = effectiveJPY / exitRate;
+        const netProfitEUR = grossEUR - effectiveCost;
+        const roi = (netProfitEUR / effectiveCost) * 100;
+
+        document.getElementById('sim-eur-gross').innerText = formatEUR(grossEUR);
+        
+        const netEl = document.getElementById('sim-eur-net');
+        const roiEl = document.getElementById('sim-roi-val');
+
+        if (netProfitEUR >= 0) {
+            netEl.innerText = `+${formatEUR(netProfitEUR)}`;
+            netEl.style.color = "var(--accent-profit)";
+            roiEl.innerText = `+${roi.toFixed(1)}%`;
+            roiEl.style.color = "var(--accent-profit)";
+        } else {
+            netEl.innerText = `${formatEUR(netProfitEUR)}`;
+            netEl.style.color = "var(--accent-loss)";
+            roiEl.innerText = `${roi.toFixed(1)}%`;
+            roiEl.style.color = "var(--accent-loss)";
+        }
+    }
+
+    /* ==========================================================
+       HISTORICAL & INTRADAY CHART ENGINE (1D, 1W, 1M, 3M, 1Y, 5Y)
+       ========================================================== */
+    async function changeChartTimeframe(tf) {
+        currentActiveTimeframe = tf;
+        document.querySelectorAll('.time-btn').forEach(b => {
+            b.classList.toggle('active', b.innerText === tf);
+        });
+
+        const mainTitle = document.getElementById('chart-main-title');
+        const subTitle = document.getElementById('chart-sub-title');
+
+        if (tf === '1D') {
+            mainTitle.innerText = 'EUR / JPY Live Intraday (1D — 15m)';
+            subTitle.innerText = 'Real-time Forex Tick & 15-Minute Candles';
+            await loadIntradayChart('1d', '15m');
+            return;
+        }
+
+        if (tf === '1W') {
+            mainTitle.innerText = 'EUR / JPY Past 7 Days (1W — Hourly)';
+            subTitle.innerText = 'Live Weekly Intraday Curve';
+            await loadIntradayChart('5d', '1h');
+            return;
+        }
+
+        // 1M, 3M, 1Y, 5Y from Embedded Daily ECB Dataset
+        mainTitle.innerText = `EUR / JPY Trend (${tf} Daily Close)`;
+        subTitle.innerText = 'European Central Bank (ECB) Official Daily Rates';
+
+        let days = 30;
+        if (tf === '1M') days = 30;
+        if (tf === '3M') days = 90;
+        if (tf === '1Y') days = 365;
+        if (tf === '5Y') days = 1825;
+
+        const cutoffDate = getRelativeDate(-days);
+        const filtered = fullRatesDataset.filter(item => item[0] >= cutoffDate);
+        
+        const dates = filtered.map(item => item[0]);
+        const rates = filtered.map(item => item[1]);
+
+        updatePeriodStats(rates, '30-Day Moving Average');
+        renderChart({ labels: dates, rates: rates, mode: 'daily' });
+    }
+
+    async function loadIntradayChart(range, interval) {
+        const cacheKey = range === '1d' ? '1D' : '1W';
+        if (intradayCache[cacheKey]) {
+            renderIntraday(intradayCache[cacheKey], cacheKey);
+            return;
+        }
+
+        try {
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/EURJPY=X?range=${range}&interval=${interval}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('Yahoo FX HTTP ' + resp.status);
+            const data = await resp.json();
+            const result = data.chart.result[0];
+            const timestamps = result.timestamp;
+            const quotes = result.indicators.quote[0].close;
+
+            const labels = [];
+            const rates = [];
+
+            for (let i = 0; i < timestamps.length; i++) {
+                if (quotes[i] !== null && quotes[i] !== undefined) {
+                    const d = new Date(timestamps[i] * 1000);
+                    const timeStr = cacheKey === '1D' 
+                        ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+                        : `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:00`;
+                    labels.push(timeStr);
+                    rates.push(parseFloat(quotes[i].toFixed(2)));
+                }
+            }
+
+            if (rates.length > 0) {
+                intradayCache[cacheKey] = { labels, rates };
+                renderIntraday({ labels, rates }, cacheKey);
+                return;
+            }
+        } catch (e) {
+            console.warn('Intraday fetch failed, falling back to daily slice', e);
+        }
+
+        // Fallback using daily points if offline/blocked
+        const days = cacheKey === '1D' ? 2 : 7;
+        const cutoff = getRelativeDate(-days);
+        const filtered = fullRatesDataset.filter(item => item[0] >= cutoff);
+        const labels = filtered.map(item => item[0]);
+        const rates = filtered.map(item => item[1]);
+        renderIntraday({ labels, rates }, cacheKey);
+    }
+
+    function renderIntraday(chartData, cacheKey) {
+        updatePeriodStats(chartData.rates, cacheKey === '1D' ? 'Intraday Average' : '7-Day Average');
+        renderChart({ labels: chartData.labels, rates: chartData.rates, mode: cacheKey });
+    }
+
+    function updatePeriodStats(rates, maLabel) {
+        if (rates.length > 0) {
+            const periodHigh = Math.max(...rates);
+            const periodLow = Math.min(...rates);
+            document.getElementById('stat-highlow').innerText = `${periodHigh.toFixed(2)} / ${periodLow.toFixed(2)}`;
+
+            const ma = rates.reduce((a, b) => a + b, 0) / rates.length;
+            document.getElementById('stat-ma30').innerText = ma.toFixed(2) + " ¥";
+            document.getElementById('stat-ma-title').innerText = maLabel;
+        }
+    }
+
+    function renderChart(chartData) {
+        if (!chartData || !chartData.labels || chartData.labels.length === 0) return;
+        const canvas = document.getElementById('rateChart');
+        if (!canvas) return;
+
+        if (typeof Chart === 'undefined') {
+            setTimeout(() => renderChart(chartData), 150);
+            return;
+        }
+
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = isDark ? '#1a1d2d' : '#e9d5ff';
+        const textColor = isDark ? '#a1a1aa' : '#52525b';
+
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+        if (isDark) {
+            gradient.addColorStop(0, 'rgba(168, 85, 247, 0.38)');
+            gradient.addColorStop(1, 'rgba(168, 85, 247, 0.00)');
+        } else {
+            gradient.addColorStop(0, 'rgba(124, 58, 237, 0.22)');
+            gradient.addColorStop(1, 'rgba(124, 58, 237, 0.00)');
+        }
+
+        const isDense = chartData.labels.length > 60;
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'EUR/JPY Rate',
+                    data: chartData.rates,
+                    borderColor: '#a855f7',
+                    borderWidth: 2.2,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.15,
+                    pointRadius: isDense ? 0 : 2.5,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#8b5cf6',
+                    pointHoverBackgroundColor: '#c084fc',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: isDark ? '#0f121d' : '#ffffff',
+                        titleColor: isDark ? '#f8fafc' : '#18181b',
+                        bodyColor: isDark ? '#c4b5fd' : '#7c3aed',
+                        borderColor: isDark ? 'rgba(139, 92, 246, 0.4)' : '#d8b4fe',
+                        borderWidth: 1,
+                        padding: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: (c) => ` 1 EUR = ${c.parsed.y.toFixed(2)} JPY`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: gridColor, drawBorder: false },
+                        ticks: { color: textColor, maxTicksLimit: 6, font: { family: 'Inter', size: 10 } }
+                    },
+                    y: {
+                        grid: { color: gridColor, drawBorder: false },
+                        ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } }
+                    }
+                }
+            }
+        });
+        chartInstance._cachedData = chartData;
+    }
+
+    /* ==========================================================
+       DCA ACCUMULATION STRATEGY
+       ========================================================== */
+    function calcStrategyLadder() {
+        state.strategyProfile = document.getElementById('strat-profile').value;
+        const spreadInput = document.getElementById('strat-spread');
+        state.limitSpread = (spreadInput && spreadInput.value !== '') ? parseFloat(spreadInput.value) || 1.50 : 1.50;
+        saveState();
+
+        const budgetInput = document.getElementById('fc-budget');
+        const budget = (budgetInput && budgetInput.value !== '') ? parseFloat(budgetInput.value) || 3000 : (state.budgetEUR || 3000);
+        const spread = parseFloat(state.limitSpread) || 1.50;
+        const tbody = document.getElementById('strat-rows');
+
+        let tranches = [];
+
+        if (state.strategyProfile === 'ladder') {
+            tranches = [
+                { name: 'Tranche 1 (40%)', cond: 'Immediate Base Spot Accumulation', eur: budget * 0.40, rate: liveSpotRate, type: 'live' },
+                { name: 'Tranche 2 (30%)', cond: `Revolut Limit Buy (+${spread.toFixed(2)} ¥)`, eur: budget * 0.30, rate: liveSpotRate + spread, type: 'limit' },
+                { name: 'Tranche 3 (30%)', cond: `Revolut Limit Buy (+${(spread * 2.2).toFixed(2)} ¥)`, eur: budget * 0.30, rate: liveSpotRate + (spread * 2.2), type: 'limit' }
+            ];
+        } else if (state.strategyProfile === 'periodic') {
+            const chunk = budget / 4;
+            tranches = [
+                { name: 'Quarter 1 (25%)', cond: 'Entry Accumulation', eur: chunk, rate: liveSpotRate, type: 'live' },
+                { name: 'Quarter 2 (25%)', cond: 'Periodic Conversion', eur: chunk, rate: liveSpotRate + (spread * 0.5), type: 'limit' },
+                { name: 'Quarter 3 (25%)', cond: 'Periodic Conversion', eur: chunk, rate: liveSpotRate + spread, type: 'limit' },
+                { name: 'Quarter 4 (25%)', cond: 'Final Accumulation', eur: chunk, rate: liveSpotRate, type: 'limit' }
+            ];
+        } else {
+            const chunk = budget / 6;
+            for (let i = 1; i <= 6; i++) {
+                tranches.push({
+                    name: `Month ${i} (16.7%)`,
+                    cond: `Monthly DCA Tranche ${i}`,
+                    eur: chunk,
+                    rate: liveSpotRate + ((i - 1) * 0.4),
+                    type: i === 1 ? 'live' : 'limit'
+                });
+            }
+        }
+
+        tbody.innerHTML = tranches.map(t => {
+            const jpy = t.eur * t.rate;
+            return `
+                <tr>
+                    <td><strong>${t.name}</strong></td>
+                    <td>${t.cond}</td>
+                    <td class="mono">${formatEUR(t.eur)}</td>
+                    <td class="mono"><strong>${t.rate.toFixed(2)} ¥</strong></td>
+                    <td class="mono" style="color: var(--accent-profit); font-weight: 600;">${formatJPY(jpy)}</td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <button class="btn btn-sm btn-primary" onclick="executeTrancheToModal(${t.eur}, ${t.rate}, '${escapeHtml(t.name)}')">
+                            Log Buy
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function executeTrancheToModal(eur, rate, name) {
+        openAddModal();
+        document.getElementById('form-eur').value = eur.toFixed(2);
+        document.getElementById('form-rate').value = rate.toFixed(2);
+        document.getElementById('form-jpy').value = Math.round(eur * rate);
+        document.getElementById('form-notes').value = name;
+    }
+
+    /* ==========================================================
+       MODAL & FORM HANDLERS
+       ========================================================== */
+    function openAddModal() {
+        document.getElementById('modal-tx-title').innerText = 'Log Revolut Conversion';
+        document.getElementById('form-id').value = '';
+        document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('form-eur').value = '';
+        document.getElementById('form-rate').value = liveSpotRate.toFixed(2);
+        document.getElementById('form-jpy').value = '';
+        document.getElementById('form-notes').value = '';
+        document.getElementById('modal-tx').classList.add('active');
+    }
+
+    function closeAddModal() {
+        document.getElementById('modal-tx').classList.remove('active');
+    }
+
+    function modalAutoCalcJPY() {
+        const eur = parseFloat(document.getElementById('form-eur').value) || 0;
+        const rate = parseFloat(document.getElementById('form-rate').value) || 0;
+        if (eur > 0 && rate > 0) {
+            document.getElementById('form-jpy').value = Math.round(eur * rate);
+        }
+    }
+
+    function modalAutoCalcRate() {
+        const eur = parseFloat(document.getElementById('form-eur').value) || 0;
+        const jpy = parseFloat(document.getElementById('form-jpy').value) || 0;
+        if (eur > 0 && jpy > 0) {
+            document.getElementById('form-rate').value = (jpy / eur).toFixed(2);
+        }
+    }
+
+    function saveTransaction(e) {
+        e.preventDefault();
+        const id = document.getElementById('form-id').value || 'tx-' + Date.now();
+        const date = document.getElementById('form-date').value;
+        const eur = parseFloat(document.getElementById('form-eur').value);
+        const rate = parseFloat(document.getElementById('form-rate').value);
+        const jpy = parseFloat(document.getElementById('form-jpy').value);
+        const notes = document.getElementById('form-notes').value;
+
+        const idx = state.transactions.findIndex(t => t.id === id);
+        const item = { id, date, eur, rate, jpy, notes };
+
+        if (idx >= 0) {
+            state.transactions[idx] = item;
+        } else {
+            state.transactions.push(item);
+        }
+
+        saveState();
+        refreshAllViews();
+        closeAddModal();
+    }
+
+    function editTx(id) {
+        const tx = state.transactions.find(t => t.id === id);
+        if (!tx) return;
+
+        document.getElementById('modal-tx-title').innerText = 'Edit Conversion';
+        document.getElementById('form-id').value = tx.id;
+        document.getElementById('form-date').value = tx.date;
+        document.getElementById('form-eur').value = tx.eur;
+        document.getElementById('form-rate').value = tx.rate;
+        document.getElementById('form-jpy').value = tx.jpy;
+        document.getElementById('form-notes').value = tx.notes || '';
+        document.getElementById('modal-tx').classList.add('active');
+    }
+
+    function deleteTx(id) {
+        if (!confirm('Delete this conversion entry?')) return;
+        state.transactions = state.transactions.filter(t => t.id !== id);
+        saveState();
+        refreshAllViews();
+    }
+
+    /* ==========================================================
+       BACKUP & RESTORE
+       ========================================================== */
+    function openBackupModal() { document.getElementById('modal-bk').classList.add('active'); }
+    function closeBackupModal() { document.getElementById('modal-bk').classList.remove('active'); }
+
+    function exportJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+        const a = document.createElement('a');
+        a.setAttribute("href", dataStr);
+        a.setAttribute("download", `eur_jpy_speculator_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
+    function exportCSV() {
+        if (state.transactions.length === 0) return alert('No transactions to export.');
+        let csv = 'Date,EUR_Spent,JPY_Bought,Rate,Notes\n';
+        state.transactions.forEach(t => {
+            csv += `"${t.date}",${t.eur},${t.jpy},${t.rate},"${(t.notes || '').replace(/"/g, '""')}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute("href", url);
+        a.setAttribute("download", `eur_jpy_revolut_buys.csv`);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
+    function importJSON(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const parsed = JSON.parse(evt.target.result);
+                if (parsed.transactions && Array.isArray(parsed.transactions)) {
+                    state = parsed;
+                    saveState();
+                    refreshAllViews();
+                    closeBackupModal();
+                    alert('Data restored successfully!');
+                } else {
+                    alert('Invalid backup file format.');
+                }
+            } catch (err) {
+                alert('Error parsing JSON backup file.');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function loadDemoData() {
+        state.transactions = [
+            { id: 'demo-1', date: getRelativeDate(-60), eur: 750, rate: 182.50, jpy: 136875, notes: 'PAC Tranche 1' },
+            { id: 'demo-2', date: getRelativeDate(-30), eur: 750, rate: 185.00, jpy: 138750, notes: 'Revolut Limit 1 Hit' },
+            { id: 'demo-3', date: getRelativeDate(-10), eur: 500, rate: 186.20, jpy: 93100, notes: 'Dip-Buy Spike' }
+        ];
+        saveState();
+        refreshAllViews();
+        closeBackupModal();
+    }
+
+    function resetData() {
+        if (!confirm('Are you sure you want to clear all transactions?')) return;
+        state.transactions = [];
+        state.budgetEUR = 3000;
+        saveState();
+        refreshAllViews();
+        closeBackupModal();
+    }
+
+    /* ==========================================================
+       HELPERS & INIT
+       ========================================================== */
+    function formatJPY(num) {
+        return "¥" + Math.round(num || 0).toLocaleString('en-US');
+    }
+    function formatEUR(num) {
+        return "€" + (num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function escapeHtml(str) {
+        return (str || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        loadState();
+        const bInput = document.getElementById('fc-budget');
+        if (bInput) bInput.value = state.budgetEUR || 3000;
+        refreshAllViews();
+        changeChartTimeframe('1M');
+        fetchLiveMarketData();
+        registerServiceWorker();
+    });
+</script>
+
+</body>
+</html>
