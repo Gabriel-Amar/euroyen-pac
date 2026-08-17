@@ -373,6 +373,57 @@
             border-radius: 50%;
             display: inline-block;
             box-shadow: 0 0 5px var(--accent-profit);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 3px var(--accent-profit); opacity: 1; }
+            50% { box-shadow: 0 0 10px var(--accent-profit), 0 0 20px rgba(16, 185, 129, 0.3); opacity: 0.7; }
+        }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            bottom: calc(80px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+            pointer-events: none;
+            max-width: 380px;
+            width: calc(100% - 32px);
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--surface-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6), var(--shadow-glow);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            pointer-events: auto;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+        }
+        .toast.toast-success { border-color: rgba(16, 185, 129, 0.4); }
+        .toast.toast-error { border-color: rgba(244, 63, 94, 0.4); }
+        .toast.toast-info { border-color: rgba(139, 92, 246, 0.4); }
+
+        .toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-8px); }
         }
 
         /* ==========================================================
@@ -1010,6 +1061,22 @@
                 </div>
             </div>
 
+            <!-- Editable Scenario Targets -->
+            <div class="form-grid" style="margin-top: 8px;">
+                <div class="field">
+                    <label>Target 1 — Yen Surge Rate (¥)</label>
+                    <input type="number" id="fc-target1" value="150" step="0.5" min="100" max="250" oninput="calcForecastScenarios()">
+                </div>
+                <div class="field">
+                    <label>Target 2 — Moderate Rally (¥)</label>
+                    <input type="number" id="fc-target2" value="165" step="0.5" min="100" max="250" oninput="calcForecastScenarios()">
+                </div>
+                <div class="field">
+                    <label>Dip Buy Threshold (¥)</label>
+                    <input type="number" id="fc-dip" value="195" step="0.5" min="100" max="250" oninput="calcForecastScenarios()">
+                </div>
+            </div>
+
             <!-- 3 Speculation Scenarios Grid -->
             <div class="scenarios-grid">
                 <!-- Target 1: 150.00 ¥ -->
@@ -1215,6 +1282,9 @@
     </footer>
 </div>
 
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toast-container"></div>
+
 <!-- SMARTPHONE NATIVE BOTTOM APP NAVIGATION BAR (< 768px) -->
 <nav class="mobile-bottom-nav">
     <button class="mob-nav-item active" id="mob-nav-market" onclick="switchTab('market')">
@@ -1313,7 +1383,10 @@
         transactions: [],
         budgetEUR: 3000,
         strategyProfile: 'ladder',
-        limitSpread: 1.50
+        limitSpread: 1.50,
+        target1: 150,
+        target2: 165,
+        dipBuy: 195
     };
 
     let liveSpotRate = 184.59;
@@ -1323,6 +1396,8 @@
     let deferredPrompt = null;
     let currentActiveTimeframe = '1M';
     let intradayCache = { '1D': null, '1W': null };
+    let intradayCacheTime = { '1D': 0, '1W': 0 };
+    let autoRefreshTimer = null;
 
     /* ==========================================================
        HEADER 3-DOTS DROPDOWN MENU
@@ -1370,7 +1445,7 @@
                 if (dropInstall) dropInstall.style.display = 'none';
             });
         } else {
-            alert('To install on iPhone / iPad:\n1. Tap the Share button in Safari\n2. Scroll down and tap "Add to Home Screen"');
+            showToast('On iOS: Tap Share → Add to Home Screen', 'info');
         }
     }
 
@@ -1646,6 +1721,20 @@
 
         const budget = (budgetInput && budgetInput.value !== '') ? parseFloat(budgetInput.value) || 0 : (state.budgetEUR || 3000);
 
+        // Read editable scenario targets
+        const t1Input = document.getElementById('fc-target1');
+        const t2Input = document.getElementById('fc-target2');
+        const dipInput = document.getElementById('fc-dip');
+        const t1Rate = (t1Input && t1Input.value !== '') ? parseFloat(t1Input.value) || 150 : (state.target1 || 150);
+        const t2Rate = (t2Input && t2Input.value !== '') ? parseFloat(t2Input.value) || 165 : (state.target2 || 165);
+        const dipRate = (dipInput && dipInput.value !== '') ? parseFloat(dipInput.value) || 195 : (state.dipBuy || 195);
+
+        // Persist targets to state
+        state.target1 = t1Rate;
+        state.target2 = t2Rate;
+        state.dipBuy = dipRate;
+        saveState();
+
         let totalEURSpent = 0;
         let totalJPYHeld = 0;
         state.transactions.forEach(t => {
@@ -1659,27 +1748,32 @@
         const effectiveJPY = totalJPYHeld > 0 ? totalJPYHeld : (budget * liveSpotRate);
         const effectiveCost = totalEURSpent > 0 ? totalEURSpent : (budget > 0 ? budget : 1);
 
-        // Target 1: 150.00 ¥
-        const t1Rate = 150.00;
+        // Target 1 (user-editable)
         const t1EUR = effectiveJPY / t1Rate;
         const t1Profit = t1EUR - effectiveCost;
         const t1ROI = (t1Profit / effectiveCost) * 100;
 
-        document.getElementById('scen-t1-rate').innerText = "150.00 ¥ (Major Surge)";
+        document.getElementById('scen-t1-rate').innerText = `${t1Rate.toFixed(2)} ¥ (Target 1)`;
         document.getElementById('scen-t1-eur').innerText = formatEUR(t1EUR);
-        document.getElementById('scen-t1-profit').innerText = `+${formatEUR(t1Profit)}`;
-        document.getElementById('scen-t1-roi').innerText = `+${t1ROI.toFixed(1)}% Net ROI`;
+        document.getElementById('scen-t1-profit').innerText = `${t1Profit >= 0 ? '+' : ''}${formatEUR(t1Profit)}`;
+        document.getElementById('scen-t1-roi').innerText = `${t1ROI >= 0 ? '+' : ''}${t1ROI.toFixed(1)}% Net ROI`;
+        document.getElementById('scen-t1-profit').style.color = t1Profit >= 0 ? 'var(--accent-profit)' : 'var(--accent-loss)';
+        document.getElementById('scen-t1-roi').style.color = t1Profit >= 0 ? 'var(--accent-profit)' : 'var(--accent-loss)';
 
-        // Target 2: 165.00 ¥
-        const t2Rate = 165.00;
+        // Target 2 (user-editable)
         const t2EUR = effectiveJPY / t2Rate;
         const t2Profit = t2EUR - effectiveCost;
         const t2ROI = (t2Profit / effectiveCost) * 100;
 
-        document.getElementById('scen-t2-rate').innerText = "165.00 ¥ (Moderate Rally)";
+        document.getElementById('scen-t2-rate').innerText = `${t2Rate.toFixed(2)} ¥ (Target 2)`;
         document.getElementById('scen-t2-eur').innerText = formatEUR(t2EUR);
         document.getElementById('scen-t2-profit').innerText = `${t2Profit >= 0 ? '+' : ''}${formatEUR(t2Profit)}`;
         document.getElementById('scen-t2-roi').innerText = `${t2ROI >= 0 ? '+' : ''}${t2ROI.toFixed(1)}% Net ROI`;
+        document.getElementById('scen-t2-profit').style.color = t2Profit >= 0 ? 'var(--accent-profit)' : 'var(--accent-loss)';
+        document.getElementById('scen-t2-roi').style.color = t2Profit >= 0 ? 'var(--brand-violet-light)' : 'var(--accent-loss)';
+
+        // Update Dip Buy card label dynamically
+        document.getElementById('scen-dip-rate').innerText = `${dipRate.toFixed(2)} ¥`;
 
         runSliderSimulation();
     }
@@ -1801,6 +1895,7 @@
 
             if (rates.length > 0) {
                 intradayCache[cacheKey] = { labels, rates };
+                intradayCacheTime[cacheKey] = Date.now();
                 renderIntraday({ labels, rates }, cacheKey);
                 return;
             }
@@ -1864,32 +1959,67 @@
 
         const isDense = chartData.labels.length > 60;
 
+        // Calculate PMC for overlay line
+        let totalEUR = 0, totalJPY = 0;
+        state.transactions.forEach(t => {
+            totalEUR += parseFloat(t.eur) || 0;
+            totalJPY += parseFloat(t.jpy) || 0;
+        });
+        const pmc = totalEUR > 0 ? (totalJPY / totalEUR) : 0;
+
+        const datasets = [{
+            label: 'EUR/JPY Rate',
+            data: chartData.rates,
+            borderColor: '#a855f7',
+            borderWidth: 2.2,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.15,
+            pointRadius: isDense ? 0 : 2.5,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#8b5cf6',
+            pointHoverBackgroundColor: '#c084fc',
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 2
+        }];
+
+        // Add PMC horizontal line if user has buys
+        if (pmc > 0) {
+            datasets.push({
+                label: 'Your PMC',
+                data: Array(chartData.labels.length).fill(pmc),
+                borderColor: isDark ? '#f59e0b' : '#d97706',
+                borderWidth: 1.5,
+                borderDash: [6, 4],
+                backgroundColor: 'transparent',
+                fill: false,
+                tension: 0,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: isDark ? '#f59e0b' : '#d97706'
+            });
+        }
+
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: chartData.labels,
-                datasets: [{
-                    label: 'EUR/JPY Rate',
-                    data: chartData.rates,
-                    borderColor: '#a855f7',
-                    borderWidth: 2.2,
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.15,
-                    pointRadius: isDense ? 0 : 2.5,
-                    pointHoverRadius: 6,
-                    pointBackgroundColor: '#8b5cf6',
-                    pointHoverBackgroundColor: '#c084fc',
-                    pointHoverBorderColor: '#ffffff',
-                    pointHoverBorderWidth: 2
-                }]
+                datasets: datasets
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: { intersect: false, mode: 'index' },
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: pmc > 0,
+                        labels: {
+                            color: textColor,
+                            boxWidth: 14,
+                            padding: 10,
+                            font: { family: 'Inter', size: 10, weight: '600' }
+                        }
+                    },
                     tooltip: {
                         backgroundColor: isDark ? '#0f121d' : '#ffffff',
                         titleColor: isDark ? '#f8fafc' : '#18181b',
@@ -1897,9 +2027,12 @@
                         borderColor: isDark ? 'rgba(139, 92, 246, 0.4)' : '#d8b4fe',
                         borderWidth: 1,
                         padding: 8,
-                        displayColors: false,
+                        displayColors: true,
                         callbacks: {
-                            label: (c) => ` 1 EUR = ${c.parsed.y.toFixed(2)} JPY`
+                            label: (c) => {
+                                if (c.dataset.label === 'Your PMC') return ` PMC = ${c.parsed.y.toFixed(2)} ¥`;
+                                return ` 1 EUR = ${c.parsed.y.toFixed(2)} JPY`;
+                            }
                         }
                     }
                 },
@@ -2043,6 +2176,9 @@
         saveState();
         refreshAllViews();
         closeAddModal();
+        showToast(idx >= 0 ? 'Conversion updated' : `Logged ${formatEUR(eur)} → ${formatJPY(jpy)}`, 'success');
+        // Re-render chart to update PMC line
+        if (chartInstance && chartInstance._cachedData) renderChart(chartInstance._cachedData);
     }
 
     function editTx(id) {
@@ -2064,6 +2200,8 @@
         state.transactions = state.transactions.filter(t => t.id !== id);
         saveState();
         refreshAllViews();
+        showToast('Conversion deleted', 'info');
+        if (chartInstance && chartInstance._cachedData) renderChart(chartInstance._cachedData);
     }
 
     /* ==========================================================
@@ -2083,7 +2221,7 @@
     }
 
     function exportCSV() {
-        if (state.transactions.length === 0) return alert('No transactions to export.');
+        if (state.transactions.length === 0) return showToast('No transactions to export', 'error');
         let csv = 'Date,EUR_Spent,JPY_Bought,Rate,Notes\n';
         state.transactions.forEach(t => {
             csv += `"${t.date}",${t.eur},${t.jpy},${t.rate},"${(t.notes || '').replace(/"/g, '""')}"\n`;
@@ -2110,12 +2248,12 @@
                     saveState();
                     refreshAllViews();
                     closeBackupModal();
-                    alert('Data restored successfully!');
+                    showToast('Data restored successfully!', 'success');
                 } else {
-                    alert('Invalid backup file format.');
+                    showToast('Invalid backup file format', 'error');
                 }
             } catch (err) {
-                alert('Error parsing JSON backup file.');
+                showToast('Error parsing JSON backup file', 'error');
             }
         };
         reader.readAsText(file);
@@ -2154,15 +2292,59 @@
         return (str || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
+    /* Toast Notification System */
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const icons = { success: '✅', error: '❌', info: '💜' };
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<span class="toast-icon">${icons[type] || '💜'}</span><span>${escapeHtml(message)}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3100);
+    }
+
+    /* Auto-refresh live rate every 60 seconds (only when tab is visible) */
+    function startAutoRefresh() {
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        autoRefreshTimer = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                fetchLiveMarketData(false);
+                // Invalidate intraday cache after 5 minutes
+                const now = Date.now();
+                if (intradayCacheTime['1D'] && (now - intradayCacheTime['1D']) > 300000) {
+                    intradayCache['1D'] = null;
+                    intradayCacheTime['1D'] = 0;
+                }
+                if (intradayCacheTime['1W'] && (now - intradayCacheTime['1W']) > 300000) {
+                    intradayCache['1W'] = null;
+                    intradayCacheTime['1W'] = 0;
+                }
+            }
+        }, 60000);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         initTheme();
         loadState();
+
+        // Restore budget input
         const bInput = document.getElementById('fc-budget');
         if (bInput) bInput.value = state.budgetEUR || 3000;
+
+        // Restore scenario target inputs from saved state
+        const t1Input = document.getElementById('fc-target1');
+        const t2Input = document.getElementById('fc-target2');
+        const dipInput = document.getElementById('fc-dip');
+        if (t1Input) t1Input.value = state.target1 || 150;
+        if (t2Input) t2Input.value = state.target2 || 165;
+        if (dipInput) dipInput.value = state.dipBuy || 195;
+
         refreshAllViews();
         changeChartTimeframe('1M');
         fetchLiveMarketData();
         registerServiceWorker();
+        startAutoRefresh();
     });
 </script>
 
