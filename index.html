@@ -426,6 +426,127 @@
             to { opacity: 0; transform: translateY(-8px); }
         }
 
+        /* Rate Alerts Panel */
+        .alerts-panel {
+            background: var(--surface-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .alerts-panel .alert-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+        .alerts-panel .alert-row:last-child { border-bottom: none; }
+        .alerts-panel input[type="number"] {
+            width: 90px;
+            padding: 5px 8px;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            text-align: center;
+        }
+        .alerts-panel input[type="number"]:focus {
+            border-color: var(--border-focus);
+            outline: none;
+        }
+        .alert-label {
+            font-size: 0.725rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        .alert-toggle {
+            width: 36px; height: 20px;
+            background: var(--border);
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .alert-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px;
+            width: 16px; height: 16px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .alert-toggle.on { background: var(--brand-violet); }
+        .alert-toggle.on::after { left: 18px; background: white; }
+
+        /* Trend Indicator */
+        .trend-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .trend-arrow.up { color: var(--accent-loss); }
+        .trend-arrow.down { color: var(--accent-profit); }
+        .trend-arrow.flat { color: var(--text-muted); }
+
+        /* Sell Badge */
+        .tx-type-badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .tx-type-badge.buy { background: var(--accent-profit-bg); color: var(--accent-profit); }
+        .tx-type-badge.sell { background: var(--accent-loss-bg); color: var(--accent-loss); }
+
+        /* Tax Info */
+        .tax-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: var(--surface-input);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            font-size: 0.75rem;
+        }
+        .tax-row .tax-label { color: var(--text-muted); font-weight: 600; }
+        .tax-row .tax-value { font-family: var(--font-mono); font-weight: 700; }
+
+        /* Realized P&L Section */
+        .realized-section {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--surface-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+        }
+        .realized-header {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .realized-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
         /* ==========================================================
            DESKTOP NAVIGATION (Visible on Desktop >= 768px)
            ========================================================== */
@@ -941,6 +1062,10 @@
             </div>
             <div class="kpi-number" id="kpi-spot-rate">-- ¥</div>
             <div class="kpi-footer" id="kpi-spot-date">Connecting...</div>
+            <div class="trend-arrow flat" id="kpi-trend" style="margin-top: 2px;">
+                <span id="kpi-trend-icon">→</span>
+                <span id="kpi-trend-label">Calculating...</span>
+            </div>
         </div>
 
         <!-- Buy Price (PMC) -->
@@ -1031,6 +1156,31 @@
                 <div class="kpi-title">Break-Even Spread</div>
                 <div class="kpi-number" style="font-size: 1.25rem;" id="stat-be-spread">-- ¥</div>
                 <div class="card-desc">Distance from spot to PMC</div>
+            </div>
+        </div>
+
+        <!-- Rate Alerts -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        Rate Alerts
+                    </h2>
+                    <p class="card-desc">Get notified when EUR/JPY crosses your thresholds</p>
+                </div>
+            </div>
+            <div class="alerts-panel">
+                <div class="alert-row">
+                    <span class="alert-label">🔴 Upper Alert (EUR/JPY rises above)</span>
+                    <input type="number" id="alert-upper" placeholder="190" step="0.5" oninput="saveAlertSettings()">
+                    <button class="alert-toggle" id="alert-upper-toggle" onclick="toggleAlert('upper')"></button>
+                </div>
+                <div class="alert-row">
+                    <span class="alert-label">🟢 Lower Alert (EUR/JPY drops below)</span>
+                    <input type="number" id="alert-lower" placeholder="170" step="0.5" oninput="saveAlertSettings()">
+                    <button class="alert-toggle" id="alert-lower-toggle" onclick="toggleAlert('lower')"></button>
+                </div>
             </div>
         </div>
     </div>
@@ -1185,21 +1335,32 @@
                         <span class="sim-stat-value" style="color: var(--accent-profit);" id="sim-roi-val">+0.0%</span>
                     </div>
                 </div>
+
+                <!-- Italian Tax Info -->
+                <div class="tax-row" id="tax-info-row">
+                    <span class="tax-label">🇮🇹 Italian Tax (26% CGT)</span>
+                    <span class="tax-value" id="tax-status">Exempt — below €51,645 threshold</span>
+                </div>
+                <div class="tax-row" style="border-style: none; background: transparent; padding: 2px 10px; margin-top: 2px;">
+                    <span class="tax-label" style="font-size: 0.625rem; font-style: italic;">FX gains taxed only if holdings exceed €51,645.69 for 7+ consecutive business days (Art. 67 TUIR)</span>
+                    <span class="tax-value" id="tax-net-profit" style="font-size: 0.85rem;"></span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- TAB 3: Ledger (My Revolut Buys) -->
+    <!-- TAB 3: Ledger (My Revolut Buys & Sells) -->
     <div class="tab-panel" id="tab-ledger">
         <div class="card">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">My Revolut Purchases Ledger</h2>
-                    <p class="card-desc">Log your conversions to track your average purchase price (PMC)</p>
+                    <h2 class="card-title">Revolut Transaction Ledger</h2>
+                    <p class="card-desc">Log buys and sells to track PMC, realized & unrealized P&L</p>
                 </div>
                 <div style="display: flex; gap: 6px;">
                     <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
-                    <button class="btn btn-primary" onclick="openAddModal()">+ Log Buy</button>
+                    <button class="btn btn-primary" onclick="openAddModal('buy')">+ Buy</button>
+                    <button class="btn btn-sm" style="border-color: rgba(244, 63, 94, 0.3); color: var(--accent-loss);" onclick="openAddModal('sell')">− Sell</button>
                 </div>
             </div>
 
@@ -1208,9 +1369,10 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>EUR Spent</th>
-                            <th>JPY Bought</th>
-                            <th>Buy Rate</th>
+                            <th>Type</th>
+                            <th>EUR</th>
+                            <th>JPY</th>
+                            <th>Rate</th>
                             <th>Notes</th>
                             <th style="text-align: right;">Actions</th>
                         </tr>
@@ -1220,7 +1382,8 @@
                     </tbody>
                     <tfoot>
                         <tr style="background: var(--surface-input); font-weight: 700;">
-                            <td>Total Position:</td>
+                            <td>Net Position:</td>
+                            <td></td>
                             <td class="mono" id="foot-eur">€0.00</td>
                             <td class="mono" style="color: var(--accent-profit);" id="foot-jpy">¥0</td>
                             <td class="mono" id="foot-pmc">--</td>
@@ -1228,6 +1391,25 @@
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            <!-- Realized P&L Summary -->
+            <div class="realized-section" id="realized-section" style="display: none;">
+                <div class="realized-header">Realized P&L (from sells)</div>
+                <div class="realized-grid">
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Total EUR Sold For</span>
+                        <span class="sim-stat-value" id="realized-eur-received">€0.00</span>
+                    </div>
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Cost Basis (LIFO)</span>
+                        <span class="sim-stat-value" id="realized-cost-basis">€0.00</span>
+                    </div>
+                    <div class="sim-stat-box">
+                        <span class="sim-stat-label">Realized Profit</span>
+                        <span class="sim-stat-value" style="color: var(--accent-profit);" id="realized-profit">+€0.00</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1314,6 +1496,7 @@
         </div>
         <form onsubmit="saveTransaction(event)">
             <input type="hidden" id="form-id">
+            <input type="hidden" id="form-type" value="buy">
             <div class="field" style="margin-bottom: 12px;">
                 <label>Date</label>
                 <input type="date" id="form-date" required>
@@ -1386,11 +1569,16 @@
         limitSpread: 1.50,
         target1: 150,
         target2: 165,
-        dipBuy: 195
+        dipBuy: 195,
+        alertUpper: null,
+        alertUpperOn: false,
+        alertLower: null,
+        alertLowerOn: false
     };
 
     let liveSpotRate = 184.59;
     let liveDateStr = "2026-08-17";
+    let previousSpotRate = null;
     let chartInstance = null;
     let fullRatesDataset = [...EMBEDDED_REAL_RATES];
     let deferredPrompt = null;
@@ -1599,6 +1787,8 @@
         renderLedger();
         calcForecastScenarios();
         calcStrategyLadder();
+        updateTrendIndicator();
+        checkRateAlerts();
     }
 
     function renderLedger() {
@@ -1606,27 +1796,43 @@
         const countBadge = document.getElementById('kpi-buys-badge');
         const tabCount = document.getElementById('tab-count-badge');
 
-        countBadge.innerText = `${state.transactions.length} Buy${state.transactions.length === 1 ? '' : 's'}`;
+        const buys = state.transactions.filter(t => (t.type || 'buy') === 'buy');
+        const sells = state.transactions.filter(t => t.type === 'sell');
+
+        countBadge.innerText = `${buys.length} Buy${buys.length === 1 ? '' : 's'}`;
         tabCount.innerText = state.transactions.length;
 
         let totalEURSpent = 0;
-        let totalJPYHeld = 0;
+        let totalJPYBought = 0;
+        let totalEURFromSells = 0;
+        let totalJPYSold = 0;
+
+        buys.forEach(t => { totalEURSpent += parseFloat(t.eur) || 0; totalJPYBought += parseFloat(t.jpy) || 0; });
+        sells.forEach(t => { totalEURFromSells += parseFloat(t.eur) || 0; totalJPYSold += parseFloat(t.jpy) || 0; });
+
+        const netJPYHeld = totalJPYBought - totalJPYSold;
+        const netEURInvested = totalEURSpent; // cost basis for buys
 
         if (state.transactions.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 18px; color: var(--text-muted);">
-                No conversions logged yet. Click <strong>+ Log Buy</strong> to add a purchase.
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 18px; color: var(--text-muted);">
+                No transactions yet. Click <strong>+ Buy</strong> to log a purchase.
             </td></tr>`;
         } else {
             const sorted = [...state.transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
             tbody.innerHTML = sorted.map(tx => {
-                totalEURSpent += parseFloat(tx.eur) || 0;
-                totalJPYHeld += parseFloat(tx.jpy) || 0;
+                const isSell = tx.type === 'sell';
+                const typeBadge = isSell
+                    ? '<span class="tx-type-badge sell">SELL</span>'
+                    : '<span class="tx-type-badge buy">BUY</span>';
+                const eurColor = isSell ? 'color: var(--accent-profit); font-weight: 600;' : '';
+                const jpyColor = isSell ? 'color: var(--accent-loss);' : 'color: var(--accent-profit); font-weight: 600;';
 
                 return `
                     <tr>
                         <td class="mono">${tx.date}</td>
-                        <td class="mono">${formatEUR(tx.eur)}</td>
-                        <td class="mono" style="color: var(--accent-profit); font-weight: 600;">${formatJPY(tx.jpy)}</td>
+                        <td>${typeBadge}</td>
+                        <td class="mono" style="${eurColor}">${isSell ? '+' : ''}${formatEUR(tx.eur)}</td>
+                        <td class="mono" style="${jpyColor}">${isSell ? '-' : ''}${formatJPY(tx.jpy)}</td>
                         <td class="mono"><strong>${parseFloat(tx.rate).toFixed(2)}</strong></td>
                         <td style="color: var(--text-secondary);">${escapeHtml(tx.notes || '--')}</td>
                         <td style="text-align: right; white-space: nowrap;">
@@ -1638,23 +1844,24 @@
             }).join('');
         }
 
-        // Totals Footer
-        document.getElementById('foot-eur').innerText = formatEUR(totalEURSpent);
-        document.getElementById('foot-jpy').innerText = formatJPY(totalJPYHeld);
+        // Totals Footer (net position)
+        document.getElementById('foot-eur').innerText = formatEUR(netEURInvested);
+        document.getElementById('foot-jpy').innerText = formatJPY(netJPYHeld);
 
-        // PMC
-        const pmc = totalEURSpent > 0 ? (totalJPYHeld / totalEURSpent) : 0;
+        // PMC (based on buys only)
+        const pmc = totalEURSpent > 0 ? (totalJPYBought / totalEURSpent) : 0;
         const pmcEl = document.getElementById('kpi-pmc');
         const pmcDiff = document.getElementById('kpi-pmc-diff');
         const footPmc = document.getElementById('foot-pmc');
 
-        const currentEURValue = (totalJPYHeld > 0 && liveSpotRate > 0) ? (totalJPYHeld / liveSpotRate) : 0;
-        const unrealizedProfitEUR = currentEURValue - totalEURSpent;
-        const unrealizedROI = totalEURSpent > 0 ? (unrealizedProfitEUR / totalEURSpent) * 100 : 0;
+        const currentEURValue = (netJPYHeld > 0 && liveSpotRate > 0) ? (netJPYHeld / liveSpotRate) : 0;
+        const costBasisForHeld = totalEURSpent > 0 ? (netJPYHeld / totalJPYBought) * totalEURSpent : 0;
+        const unrealizedProfitEUR = currentEURValue - costBasisForHeld;
+        const unrealizedROI = costBasisForHeld > 0 ? (unrealizedProfitEUR / costBasisForHeld) * 100 : 0;
 
-        document.getElementById('kpi-jpy-count').innerText = formatJPY(totalJPYHeld);
+        document.getElementById('kpi-jpy-count').innerText = formatJPY(netJPYHeld);
         document.getElementById('kpi-eur-now').innerText = formatEUR(currentEURValue);
-        document.getElementById('kpi-eur-cost').innerText = `${formatEUR(totalEURSpent)} spent`;
+        document.getElementById('kpi-eur-cost').innerText = `${formatEUR(netEURInvested)} spent`;
 
         const profitEl = document.getElementById('kpi-profit-val');
         const profitRoi = document.getElementById('kpi-profit-roi');
@@ -1695,6 +1902,119 @@
             profitPill.innerText = "No Buys";
             document.getElementById('stat-be-spread').innerText = "--";
         }
+
+        // Realized P&L from sells
+        const realizedSection = document.getElementById('realized-section');
+        if (sells.length > 0 && pmc > 0) {
+            realizedSection.style.display = 'block';
+            // Cost basis: JPY sold / buy PMC = EUR those JPY cost
+            const costBasisEUR = totalJPYSold / pmc;
+            const realizedProfit = totalEURFromSells - costBasisEUR;
+
+            document.getElementById('realized-eur-received').innerText = formatEUR(totalEURFromSells);
+            document.getElementById('realized-cost-basis').innerText = formatEUR(costBasisEUR);
+
+            const rpEl = document.getElementById('realized-profit');
+            rpEl.innerText = `${realizedProfit >= 0 ? '+' : ''}${formatEUR(realizedProfit)}`;
+            rpEl.style.color = realizedProfit >= 0 ? 'var(--accent-profit)' : 'var(--accent-loss)';
+        } else {
+            realizedSection.style.display = 'none';
+        }
+
+        // Italian tax status
+        const taxStatus = document.getElementById('tax-status');
+        const taxNetProfit = document.getElementById('tax-net-profit');
+        if (taxStatus) {
+            const positionEUR = currentEURValue;
+            const TAX_THRESHOLD = 51645.69;
+            if (positionEUR >= TAX_THRESHOLD) {
+                taxStatus.innerText = `⚠️ Taxable — position €${Math.round(positionEUR).toLocaleString()} exceeds €51,645`;
+                taxStatus.style.color = 'var(--accent-loss)';
+            } else {
+                taxStatus.innerText = `✅ Tax-exempt — position below €51,645 threshold`;
+                taxStatus.style.color = 'var(--accent-profit)';
+            }
+        }
+    }
+
+    /* Trend Indicator */
+    function updateTrendIndicator() {
+        const trendEl = document.getElementById('kpi-trend');
+        const iconEl = document.getElementById('kpi-trend-icon');
+        const labelEl = document.getElementById('kpi-trend-label');
+        if (!trendEl || !iconEl || !labelEl) return;
+
+        // Use last 7 daily data points
+        const recent = fullRatesDataset.slice(-7);
+        if (recent.length < 2) return;
+
+        const weekAgoRate = recent[0][1];
+        const currentRate = recent[recent.length - 1][1];
+        const change = currentRate - weekAgoRate;
+        const changePct = (change / weekAgoRate) * 100;
+
+        if (Math.abs(changePct) < 0.15) {
+            trendEl.className = 'trend-arrow flat';
+            iconEl.innerText = '→';
+            labelEl.innerText = `Flat (${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)`;
+        } else if (change > 0) {
+            // EUR/JPY rising = Yen weakening = bad for speculation
+            trendEl.className = 'trend-arrow up';
+            iconEl.innerText = '↗';
+            labelEl.innerText = `Yen weakening +${changePct.toFixed(2)}%`;
+        } else {
+            // EUR/JPY dropping = Yen strengthening = good!
+            trendEl.className = 'trend-arrow down';
+            iconEl.innerText = '↙';
+            labelEl.innerText = `Yen strengthening ${changePct.toFixed(2)}%`;
+        }
+    }
+
+    /* Rate Alerts */
+    function saveAlertSettings() {
+        const upperInput = document.getElementById('alert-upper');
+        const lowerInput = document.getElementById('alert-lower');
+        state.alertUpper = upperInput && upperInput.value !== '' ? parseFloat(upperInput.value) : null;
+        state.alertLower = lowerInput && lowerInput.value !== '' ? parseFloat(lowerInput.value) : null;
+        saveState();
+    }
+
+    function toggleAlert(which) {
+        const btn = document.getElementById(`alert-${which}-toggle`);
+        if (which === 'upper') {
+            state.alertUpperOn = !state.alertUpperOn;
+            btn.classList.toggle('on', state.alertUpperOn);
+        } else {
+            state.alertLowerOn = !state.alertLowerOn;
+            btn.classList.toggle('on', state.alertLowerOn);
+        }
+        saveState();
+        if (state.alertUpperOn || state.alertLowerOn) {
+            showToast('Rate alert enabled', 'info');
+        }
+    }
+
+    function checkRateAlerts() {
+        if (previousSpotRate === null) {
+            previousSpotRate = liveSpotRate;
+            return;
+        }
+
+        // Upper alert: notify when rate crosses above threshold
+        if (state.alertUpperOn && state.alertUpper) {
+            if (previousSpotRate <= state.alertUpper && liveSpotRate > state.alertUpper) {
+                showToast(`🔴 EUR/JPY crossed above ${state.alertUpper}¥ → now ${liveSpotRate.toFixed(2)}¥`, 'error');
+            }
+        }
+
+        // Lower alert: notify when rate crosses below threshold
+        if (state.alertLowerOn && state.alertLower) {
+            if (previousSpotRate >= state.alertLower && liveSpotRate < state.alertLower) {
+                showToast(`🟢 EUR/JPY dropped below ${state.alertLower}¥ → now ${liveSpotRate.toFixed(2)}¥ — Yen is strengthening!`, 'success');
+            }
+        }
+
+        previousSpotRate = liveSpotRate;
     }
 
     /* ==========================================================
@@ -1785,15 +2105,21 @@
         const budgetInput = document.getElementById('fc-budget');
         const budget = (budgetInput && budgetInput.value !== '') ? parseFloat(budgetInput.value) || 0 : (state.budgetEUR || 3000);
 
-        let totalEURSpent = 0;
-        let totalJPYHeld = 0;
+        let totalEURBought = 0;
+        let totalJPYBought = 0;
+        let totalJPYSold = 0;
         state.transactions.forEach(t => {
-            totalEURSpent += parseFloat(t.eur) || 0;
-            totalJPYHeld += parseFloat(t.jpy) || 0;
+            if (t.type === 'sell') {
+                totalJPYSold += parseFloat(t.jpy) || 0;
+            } else {
+                totalEURBought += parseFloat(t.eur) || 0;
+                totalJPYBought += parseFloat(t.jpy) || 0;
+            }
         });
 
-        const effectiveJPY = totalJPYHeld > 0 ? totalJPYHeld : (budget * liveSpotRate);
-        const effectiveCost = totalEURSpent > 0 ? totalEURSpent : (budget > 0 ? budget : 1);
+        const netJPY = totalJPYBought - totalJPYSold;
+        const effectiveJPY = netJPY > 0 ? netJPY : (budget * liveSpotRate);
+        const effectiveCost = totalEURBought > 0 ? (netJPY / totalJPYBought) * totalEURBought : (budget > 0 ? budget : 1);
 
         const grossEUR = effectiveJPY / exitRate;
         const netProfitEUR = grossEUR - effectiveCost;
@@ -1814,6 +2140,27 @@
             netEl.style.color = "var(--accent-loss)";
             roiEl.innerText = `${roi.toFixed(1)}%`;
             roiEl.style.color = "var(--accent-loss)";
+        }
+
+        // Italian tax calculation
+        const taxStatus = document.getElementById('tax-status');
+        const taxNetProfit = document.getElementById('tax-net-profit');
+        const TAX_THRESHOLD = 51645.69;
+        const TAX_RATE = 0.26;
+
+        if (taxStatus && taxNetProfit) {
+            if (grossEUR >= TAX_THRESHOLD && netProfitEUR > 0) {
+                const taxDue = netProfitEUR * TAX_RATE;
+                const netAfterTax = netProfitEUR - taxDue;
+                taxStatus.innerText = `⚠️ Taxable — ${formatEUR(taxDue)} tax (26%)`;
+                taxStatus.style.color = 'var(--accent-loss)';
+                taxNetProfit.innerText = `Net: ${formatEUR(netAfterTax)}`;
+                taxNetProfit.style.color = 'var(--accent-profit)';
+            } else {
+                taxStatus.innerText = `✅ Tax-exempt — below €51,645 threshold`;
+                taxStatus.style.color = 'var(--accent-profit)';
+                taxNetProfit.innerText = '';
+            }
         }
     }
 
@@ -2124,14 +2471,16 @@
     /* ==========================================================
        MODAL & FORM HANDLERS
        ========================================================== */
-    function openAddModal() {
-        document.getElementById('modal-tx-title').innerText = 'Log Revolut Conversion';
+    function openAddModal(type = 'buy') {
+        const isSell = type === 'sell';
+        document.getElementById('modal-tx-title').innerText = isSell ? 'Log Yen → EUR Sell' : 'Log EUR → Yen Buy';
         document.getElementById('form-id').value = '';
+        document.getElementById('form-type').value = type;
         document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('form-eur').value = '';
         document.getElementById('form-rate').value = liveSpotRate.toFixed(2);
         document.getElementById('form-jpy').value = '';
-        document.getElementById('form-notes').value = '';
+        document.getElementById('form-notes').value = isSell ? 'Sell — Yen to EUR' : '';
         document.getElementById('modal-tx').classList.add('active');
     }
 
@@ -2158,6 +2507,7 @@
     function saveTransaction(e) {
         e.preventDefault();
         const id = document.getElementById('form-id').value || 'tx-' + Date.now();
+        const type = document.getElementById('form-type').value || 'buy';
         const date = document.getElementById('form-date').value;
         const eur = parseFloat(document.getElementById('form-eur').value);
         const rate = parseFloat(document.getElementById('form-rate').value);
@@ -2165,7 +2515,7 @@
         const notes = document.getElementById('form-notes').value;
 
         const idx = state.transactions.findIndex(t => t.id === id);
-        const item = { id, date, eur, rate, jpy, notes };
+        const item = { id, type, date, eur, rate, jpy, notes };
 
         if (idx >= 0) {
             state.transactions[idx] = item;
@@ -2185,8 +2535,10 @@
         const tx = state.transactions.find(t => t.id === id);
         if (!tx) return;
 
-        document.getElementById('modal-tx-title').innerText = 'Edit Conversion';
+        const isSell = (tx.type || 'buy') === 'sell';
+        document.getElementById('modal-tx-title').innerText = isSell ? 'Edit Sell' : 'Edit Buy';
         document.getElementById('form-id').value = tx.id;
+        document.getElementById('form-type').value = tx.type || 'buy';
         document.getElementById('form-date').value = tx.date;
         document.getElementById('form-eur').value = tx.eur;
         document.getElementById('form-rate').value = tx.rate;
@@ -2339,6 +2691,16 @@
         if (t1Input) t1Input.value = state.target1 || 150;
         if (t2Input) t2Input.value = state.target2 || 165;
         if (dipInput) dipInput.value = state.dipBuy || 195;
+
+        // Restore alert settings
+        const alertUpper = document.getElementById('alert-upper');
+        const alertLower = document.getElementById('alert-lower');
+        if (alertUpper && state.alertUpper) alertUpper.value = state.alertUpper;
+        if (alertLower && state.alertLower) alertLower.value = state.alertLower;
+        const upperToggle = document.getElementById('alert-upper-toggle');
+        const lowerToggle = document.getElementById('alert-lower-toggle');
+        if (upperToggle && state.alertUpperOn) upperToggle.classList.add('on');
+        if (lowerToggle && state.alertLowerOn) lowerToggle.classList.add('on');
 
         refreshAllViews();
         changeChartTimeframe('1M');
