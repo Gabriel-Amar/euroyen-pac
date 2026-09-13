@@ -1,0 +1,29 @@
+{
+  "name": "euroyenpac",
+  "version": "1.0.0",
+  "description": "A progressive web application (PWA) designed for EUR to JPY accumulation, DCA (Piano di Accumulo del Capitale) tracking, historical European Central Bank (ECB) rate analysis, and Yen appreciation profit simulation.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabriel-Amar/euroyen-pac.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Gabriel-Amar/euroyen-pac/issues"
+  },
+  "homepage": "https://github.com/Gabriel-Amar/euroyen-pac#readme",
+  "dependencies": {
+    "liquid-gooey": "^0.2.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

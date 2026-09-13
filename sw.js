@@ -1,8 +1,9 @@
 // EUR/JPY PAC Speculator Service Worker
-const CACHE_NAME = 'eur-jpy-pac-v1';
+const CACHE_NAME = 'eur-jpy-pac-v2';
 const ASSETS_TO_CACHE = [
   './index.html',
   './euroyen.html',
+  './gooey-bundle.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
