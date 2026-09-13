@@ -49,21 +49,21 @@ function GooeySpeedDial() {
         aria-hidden="true"
       />
 
-      {/* Ample canvas with filterPadding={80} so bouncy spring physics never clips */}
+      {/* Ample canvas with filterPadding={120} so bouncy spring physics never clips */}
       <div id="gooey-menu-canvas" className={`gooey-menu-canvas ${open ? 'menu-open' : ''}`}>
         <Liquid
           blur={6}
           contrast={18}
           fill={fill}
           shadow={shadow}
-          filterPadding={80}
+          filterPadding={120}
           className="gooey-liquid-stage"
         >
           {/* Satellite 1: + Log Buy (Top: y = -74) */}
           <Liquid.Item
             x={0}
             y={open ? -74 : 0}
-            transition="bouncy"
+            transition={{ stiffness: 220, damping: 18 }}
           >
             <div className="gooey-item-wrapper">
               <div
@@ -103,7 +103,7 @@ function GooeySpeedDial() {
           <Liquid.Item
             x={open ? -50 : 0}
             y={open ? -50 : 0}
-            transition="bouncy"
+            transition={{ stiffness: 220, damping: 18 }}
             delay={30}
           >
             <div className="gooey-item-wrapper">
@@ -144,7 +144,7 @@ function GooeySpeedDial() {
           <Liquid.Item
             x={open ? -72 : 0}
             y={0}
-            transition="bouncy"
+            transition={{ stiffness: 220, damping: 18 }}
             delay={60}
           >
             <div className="gooey-item-wrapper">
@@ -182,7 +182,7 @@ function GooeySpeedDial() {
           </Liquid.Item>
 
           {/* Main Trigger Button */}
-          <Liquid.Item x={0} y={0} transition="bouncy">
+          <Liquid.Item x={0} y={0} transition={{ stiffness: 220, damping: 18 }}>
             <button
               type="button"
               className={`gooey-main-btn ${open ? 'is-active' : ''}`}

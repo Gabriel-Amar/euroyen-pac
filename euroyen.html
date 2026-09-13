@@ -1053,20 +1053,21 @@
 
         .gooey-liquid-stage {
             position: absolute;
-            bottom: 12px;
-            right: 12px;
-            width: 56px;
-            height: 56px;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             display: grid;
             grid-template-columns: 1fr;
             grid-template-rows: 1fr;
-            place-items: center;
+            place-items: end;
         }
 
         .gooey-liquid-stage > * {
             grid-area: 1 / 1;
             display: grid;
-            place-items: center;
+            place-items: end;
+            padding-right: 12px;
+            padding-bottom: 12px;
         }
 
         .gooey-item-wrapper {
