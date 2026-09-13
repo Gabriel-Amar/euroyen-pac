@@ -64,83 +64,109 @@ function GooeySpeedDial() {
         className={`gooey-backdrop ${open ? 'is-visible' : ''}`}
         onClick={() => setOpen(false)}
         aria-hidden="true"
-      />
-
-      {/* Canvas wrapper — large enough so satellites never clip */}
+      />      {/* Ample canvas so bouncy spring physics and pills never clip */}
       <div id="gooey-menu-canvas" className={`gooey-menu-canvas ${open ? 'menu-open' : ''}`}>
         <Liquid
-          blur={4}
-          contrast={20}
+          blur={5}
+          contrast={19}
           fill={fill}
-          shadow="none"
-          filterPadding={100}
+          shadow="0 6px 20px rgba(139, 92, 246, 0.35)"
+          filterPadding={80}
           className="gooey-liquid-stage"
         >
-          {/* Satellite 1: Buy — straight up */}
+          {/* Satellite 1: Buy JPY (Top pill: y = -174) */}
           <Liquid.Item
-            x={0}
-            y={open ? -110 : 0}
-            transition={{ stiffness: 260, damping: 22 }}
+            x={open ? 6 : 41}
+            y={open ? -174 : 0}
+            scale={open ? 1 : 0.001}
+            transition={{ stiffness: 240, damping: 20 }}
+            className="gooey-item-pos pill-item"
           >
             <button
               type="button"
-              className="gooey-sat-btn"
+              className={`gooey-pill-btn ${open ? 'is-open' : ''}`}
               title="Log Buy (EUR → JPY)"
               aria-label="Log Buy"
               tabIndex={open ? 0 : -1}
               onClick={doBuy}
             >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+              <span className="pill-icon-badge buy-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </span>
+              <span className="pill-text-col">
+                <span className="pill-title">Buy JPY</span>
+                <span className="pill-sub">EUR → JPY</span>
+              </span>
             </button>
           </Liquid.Item>
 
-          {/* Satellite 2: Sell — diagonal */}
+          {/* Satellite 2: Sell JPY (Middle pill: y = -118) */}
           <Liquid.Item
-            x={open ? -78 : 0}
-            y={open ? -78 : 0}
-            transition={{ stiffness: 260, damping: 22 }}
-            delay={40}
+            x={open ? 6 : 41}
+            y={open ? -118 : 0}
+            scale={open ? 1 : 0.001}
+            transition={{ stiffness: 240, damping: 20 }}
+            delay={30}
+            className="gooey-item-pos pill-item"
           >
             <button
               type="button"
-              className="gooey-sat-btn"
+              className={`gooey-pill-btn ${open ? 'is-open' : ''}`}
               title="Log Sell (JPY → EUR)"
               aria-label="Log Sell"
               tabIndex={open ? 0 : -1}
               onClick={doSell}
             >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14" />
-              </svg>
+              <span className="pill-icon-badge sell-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14" />
+                </svg>
+              </span>
+              <span className="pill-text-col">
+                <span className="pill-title">Sell JPY</span>
+                <span className="pill-sub">JPY → EUR</span>
+              </span>
             </button>
           </Liquid.Item>
 
-          {/* Satellite 3: Sync — straight left */}
+          {/* Satellite 3: Sync Live (Bottom pill: y = -62) */}
           <Liquid.Item
-            x={open ? -110 : 0}
-            y={0}
-            transition={{ stiffness: 260, damping: 22 }}
-            delay={80}
+            x={open ? 6 : 41}
+            y={open ? -62 : 0}
+            scale={open ? 1 : 0.001}
+            transition={{ stiffness: 240, damping: 20 }}
+            delay={60}
+            className="gooey-item-pos pill-item"
           >
             <button
               type="button"
-              className="gooey-sat-btn"
-              title="Sync Live Rates"
+              className={`gooey-pill-btn ${open ? 'is-open' : ''}`}
+              title="Sync Live ECB Rates"
               aria-label="Sync Rates"
               tabIndex={open ? 0 : -1}
               onClick={doSync}
             >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M1 4v6h6M23 20v-6h-6" />
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15" />
-              </svg>
+              <span className="pill-icon-badge sync-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+              </span>
+              <span className="pill-text-col">
+                <span className="pill-title">Sync ECB</span>
+                <span className="pill-sub">Live Rates</span>
+              </span>
             </button>
           </Liquid.Item>
 
-          {/* Main Trigger */}
-          <Liquid.Item x={0} y={0} transition={{ stiffness: 260, damping: 22 }}>
+          {/* Main Trigger Button: 54px circle */}
+          <Liquid.Item
+            x={0}
+            y={0}
+            transition={{ stiffness: 260, damping: 22 }}
+            className="gooey-item-pos fab-item"
+          >
             <button
               type="button"
               className={`gooey-main-btn ${open ? 'is-active' : ''}`}
@@ -164,7 +190,6 @@ function GooeySpeedDial() {
             </button>
           </Liquid.Item>
         </Liquid>
-
       </div>
     </>
   );
