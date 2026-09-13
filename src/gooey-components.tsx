@@ -165,21 +165,6 @@ function GooeySpeedDial() {
           </Liquid.Item>
         </Liquid>
 
-        {/* Floating labels — rendered OUTSIDE the Liquid so they're crisp */}
-        <div className={`gooey-label-set ${open ? 'labels-visible' : ''}`}>
-          <div className="gooey-floating-label fl-buy" onClick={doBuy}>
-            <span className="fl-icon" style={{ background: '#10b981' }}>+¥</span>
-            <span>Buy</span>
-          </div>
-          <div className="gooey-floating-label fl-sell" onClick={doSell}>
-            <span className="fl-icon" style={{ background: '#f43f5e' }}>−¥</span>
-            <span>Sell</span>
-          </div>
-          <div className="gooey-floating-label fl-sync" onClick={doSync}>
-            <span className="fl-icon" style={{ background: '#8b5cf6' }}>⟳</span>
-            <span>Sync</span>
-          </div>
-        </div>
       </div>
     </>
   );
