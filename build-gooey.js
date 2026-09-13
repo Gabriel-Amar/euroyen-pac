@@ -1,7 +1,7 @@
 const esbuild = require('esbuild');
 
 esbuild.build({
-  entryPoints: ['src/gooey-menu.tsx'],
+  entryPoints: ['src/gooey-components.tsx'],
   bundle: true,
   minify: true,
   format: 'iife',

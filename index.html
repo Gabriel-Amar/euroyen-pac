@@ -1015,42 +1015,121 @@
         /* ==========================================================
            GOOEY LIQUID SPEED DIAL (liquid-gooey from Libraries.dev)
            ========================================================== */
-        .gooey-menu-wrapper {
+        .gooey-backdrop {
             position: fixed;
-            bottom: calc(82px + env(safe-area-inset-bottom));
-            right: 22px;
+            inset: 0;
+            background: rgba(4, 5, 8, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1400;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+        }
+
+        .gooey-backdrop.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .gooey-menu-canvas {
+            position: fixed;
+            bottom: calc(72px + env(safe-area-inset-bottom));
+            right: 14px;
+            width: 250px;
+            height: 270px;
+            pointer-events: none;
             z-index: 1500;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
         }
 
         @media (min-width: 768px) {
-            .gooey-menu-wrapper {
-                bottom: 36px;
-                right: 36px;
+            .gooey-menu-canvas {
+                bottom: 28px;
+                right: 28px;
             }
         }
 
-        .gooey-liquid-group {
+        .gooey-liquid-stage {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 56px;
+            height: 56px;
             display: grid;
             grid-template-columns: 1fr;
             grid-template-rows: 1fr;
             place-items: center;
-            width: 56px;
-            height: 56px;
-            position: relative;
         }
 
-        .gooey-liquid-group > * {
+        .gooey-liquid-stage > * {
             grid-area: 1 / 1;
             display: grid;
             place-items: center;
         }
 
+        .gooey-item-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .gooey-pill-label {
+            position: absolute;
+            right: 58px;
+            background: rgba(18, 20, 32, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
+            color: #ffffff;
+            font-size: 0.725rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            pointer-events: auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transform: translateX(12px) scale(0.92);
+            transition: opacity 180ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gooey-pill-label:active {
+            transform: scale(0.96);
+            background: rgba(26, 29, 46, 0.96);
+        }
+
+        .label-show {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            transition-delay: 110ms;
+        }
+
+        .pill-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .pill-dot.buy-dot { background: var(--accent-profit, #10b981); box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+        .pill-dot.sell-dot { background: var(--accent-loss, #f43f5e); box-shadow: 0 0 8px rgba(244, 63, 94, 0.6); }
+        .pill-dot.sync-dot { background: var(--brand-violet-light, #a78bfa); box-shadow: 0 0 8px rgba(167, 139, 250, 0.6); }
+
+        .pill-sub {
+            font-size: 0.625rem;
+            color: var(--text-muted, #94a3b8);
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
         .gooey-main-btn {
-            width: 52px;
-            height: 52px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             border: 0;
             padding: 0;
@@ -1060,13 +1139,9 @@
             cursor: pointer;
             color: #ffffff;
             -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
             position: relative;
-            z-index: 10;
-        }
-
-        .gooey-main-btn:focus-visible {
-            outline: 2px solid var(--brand-violet-light);
-            outline-offset: 3px;
+            z-index: 20;
         }
 
         .gooey-plus-icon {
@@ -1101,45 +1176,136 @@
             pointer-events: auto;
             opacity: 1;
             filter: blur(0);
-            transition-delay: 100ms;
-        }
-
-        .gooey-sat-btn:focus-visible {
-            outline: 2px solid #ffffff;
-            outline-offset: 2px;
+            transition-delay: 90ms;
         }
 
         .gooey-sat-btn svg {
-            transition: transform 180ms ease;
+            transition: transform 160ms ease;
         }
 
         .gooey-sat-btn:active svg {
-            transform: scale(0.9);
+            transform: scale(0.88);
         }
 
-        .gooey-label {
+        /* ==========================================================
+           LIQUID GOOEY SLIDER (effect="move" with Molten Droplet Trail)
+           ========================================================== */
+        .liquid-slider-container {
+            margin: 16px 0 10px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .liquid-slider-track-box {
+            position: relative;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .liquid-slider-groove {
             position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 9px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 160ms ease;
+            left: 14px;
+            right: 14px;
+            height: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .liquid-slider-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 6px;
+            transition: width 0.05s linear;
+        }
+
+        .liquid-slider-stage {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
             pointer-events: none;
-            white-space: nowrap;
+            z-index: 5;
         }
 
-        .menu-open .gooey-label {
-            opacity: 0.95;
-            transition-delay: 100ms;
+        .liquid-slider-group {
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
 
-    </style>
+        .liquid-slider-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: transparent;
+            cursor: grab;
+            display: grid;
+            place-items: center;
+            position: absolute;
+            top: 8px;
+            left: 0;
+            touch-action: none;
+            pointer-events: auto;
+        }
+
+        .liquid-slider-thumb:active {
+            cursor: grabbing;
+        }
+
+        .thumb-inner-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        .liquid-slider-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-muted, #94a3b8);
+            font-family: var(--font-mono, monospace);
+            padding: 0 4px;
+            margin-top: -2px;
+        }
+
+        /* Liquid card glowing highlight */
+        .kpi-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+            transition: opacity 0.3s ease;
+        }
+
+        .scenario-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.12);
+        }
+</style>
 </head>
 <body onclick="closeDropdownIfOutside(event)">
 
@@ -1447,7 +1613,9 @@
                     </div>
                 </div>
                 
-                <input type="range" id="rate-slider" min="120" max="200" step="0.5" value="155" oninput="runSliderSimulation()">
+                <!-- Liquid Gooey Slider Mount -->
+                <div id="liquid-slider-mount"></div>
+                <input type="range" id="rate-slider" min="120" max="200" step="0.5" value="155" style="display: none;" oninput="runSliderSimulation()">
                 
                 <!-- Result Ribbon -->
                 <div class="sim-results-ribbon">
