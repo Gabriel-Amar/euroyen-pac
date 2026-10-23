@@ -23,7 +23,7 @@ function GooeySpeedDial() {
   }, []);
 
   const isDark = theme === 'dark';
-  const fill = isDark ? '#8b5cf6' : '#7c3aed';
+  const fill = isDark ? '#06b6d4' : '#0891b2';
 
   useEffect(() => {
     if (!open) return;

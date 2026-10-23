@@ -29,26 +29,26 @@
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             
-            /* Sleek Cyber/Fintech Dark Theme */
-            --bg: #07090e;
-            --surface: #0e111a;
-            --surface-card: rgba(19, 23, 34, 0.85);
-            --surface-card-hover: rgba(26, 32, 48, 0.95);
-            --surface-input: #0a0d14;
-            --border: #1f2638;
-            --border-light: #2d3750;
-            --border-focus: #a855f7;
+            /* Sleek Fintech Dark Theme (Cyan & Emerald) */
+            --bg: #060a12;
+            --surface: #0c121e;
+            --surface-card: rgba(15, 23, 38, 0.85);
+            --surface-card-hover: rgba(22, 33, 54, 0.95);
+            --surface-input: #080d17;
+            --border: #1a263a;
+            --border-light: #283854;
+            --border-focus: #06b6d4;
             
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             
-            /* Vibrant Electric Indigo & Violet Accents */
-            --brand-violet: #8b5cf6;
-            --brand-violet-hover: #7c3aed;
-            --brand-violet-glow: rgba(139, 92, 246, 0.25);
-            --brand-violet-light: #c4b5fd;
-            --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            /* Vibrant Cyan & Blue/Emerald Accents */
+            --brand-violet: #06b6d4;
+            --brand-violet-hover: #0891b2;
+            --brand-violet-glow: rgba(6, 182, 212, 0.25);
+            --brand-violet-light: #67e8f9;
+            --brand-gradient: linear-gradient(135deg, #0284c7 0%, #06b6d4 50%, #10b981 100%);
             
             --accent-profit: #10b981;
             --accent-profit-bg: rgba(16, 185, 129, 0.15);
@@ -61,29 +61,29 @@
             --radius-md: 12px;
             --radius-sm: 8px;
             --shadow-card: 0 8px 32px -4px rgba(0, 0, 0, 0.6);
-            --shadow-glow: 0 0 25px -2px rgba(139, 92, 246, 0.4);
+            --shadow-glow: 0 0 25px -2px rgba(6, 182, 212, 0.4);
             --backdrop-blur: blur(12px);
         }
 
         [data-theme="light"] {
-            --bg: #f4f6fb;
+            --bg: #f0f7ff;
             --surface: #ffffff;
-            --surface-card: rgba(255, 255, 255, 0.9);
-            --surface-card-hover: #f8f6ff;
-            --surface-input: #f1f5f9;
-            --border: #e2e8f0;
-            --border-light: #cbd5e1;
-            --border-focus: #7c3aed;
+            --surface-card: rgba(255, 255, 255, 0.92);
+            --surface-card-hover: #f0fdf4;
+            --surface-input: #e0f2fe;
+            --border: #bae6fd;
+            --border-light: #7dd3fc;
+            --border-focus: #0284c7;
             
             --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
             
-            --brand-violet: #7c3aed;
-            --brand-violet-hover: #6d28d9;
-            --brand-violet-glow: rgba(124, 58, 237, 0.15);
-            --brand-violet-light: #5b21b6;
-            --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%);
+            --brand-violet: #0284c7;
+            --brand-violet-hover: #0369a1;
+            --brand-violet-glow: rgba(2, 132, 199, 0.15);
+            --brand-violet-light: #0369a1;
+            --brand-gradient: linear-gradient(135deg, #0284c7 0%, #0891b2 50%, #059669 100%);
             
             --accent-profit: #059669;
             --accent-profit-bg: #ecfdf5;
@@ -92,7 +92,7 @@
             --accent-amber: #d97706;
             --accent-amber-bg: #fffbeb;
             
-            --shadow-card: 0 8px 24px -4px rgba(124, 58, 237, 0.08);
+            --shadow-card: 0 8px 24px -4px rgba(2, 132, 199, 0.08);
             --backdrop-blur: blur(12px);
         }
 
@@ -123,8 +123,8 @@
             font-family: var(--font-sans);
             background-color: var(--bg);
             background-image:
-                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+                radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
             background-attachment: fixed;
             color: var(--text-primary);
             min-height: 100vh;
@@ -164,7 +164,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 16px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.5);
             color: white;
             font-weight: 800;
             font-size: 1.1rem;
@@ -340,13 +340,13 @@
 
         .kpi-card:hover {
             transform: translateY(-2px);
-            border-color: rgba(139, 92, 246, 0.45);
+            border-color: rgba(6, 182, 212, 0.45);
             box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.7), var(--shadow-glow);
         }
 
         .kpi-card.highlight {
-            background: linear-gradient(145deg, rgba(139, 92, 246, 0.12) 0%, var(--surface-card) 100%);
-            border-color: rgba(139, 92, 246, 0.4);
+            background: linear-gradient(145deg, rgba(6, 182, 212, 0.12) 0%, var(--surface-card) 100%);
+            border-color: rgba(6, 182, 212, 0.4);
         }
 
         .kpi-header {
@@ -2304,26 +2304,26 @@
         const labelEl = document.getElementById('kpi-trend-label');
         if (!trendEl || !iconEl || !labelEl) return;
 
-        // Use last 7 daily data points
+        // Compare current liveSpotRate with the latest historical reference rate
         const recent = fullRatesDataset.slice(-7);
-        if (recent.length < 2) return;
+        if (recent.length < 1) return;
 
-        const weekAgoRate = recent[0][1];
-        const currentRate = recent[recent.length - 1][1];
-        const change = currentRate - weekAgoRate;
-        const changePct = (change / weekAgoRate) * 100;
+        const refRate = recent[recent.length - 1][1];
+        const currentRate = liveSpotRate || refRate;
+        const change = currentRate - refRate;
+        const changePct = (change / refRate) * 100;
 
-        if (Math.abs(changePct) < 0.15) {
+        if (Math.abs(changePct) < 0.05) {
             trendEl.className = 'trend-arrow flat';
             iconEl.innerText = '→';
             labelEl.innerText = `Flat (${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%)`;
         } else if (change > 0) {
-            // EUR/JPY rising = Yen weakening = bad for speculation
+            // EUR/JPY rising = Yen weakening
             trendEl.className = 'trend-arrow up';
             iconEl.innerText = '↗';
             labelEl.innerText = `Yen weakening +${changePct.toFixed(2)}%`;
         } else {
-            // EUR/JPY dropping = Yen strengthening = good!
+            // EUR/JPY dropping = Yen strengthening
             trendEl.className = 'trend-arrow down';
             iconEl.innerText = '↙';
             labelEl.innerText = `Yen strengthening ${changePct.toFixed(2)}%`;
@@ -2645,11 +2645,11 @@
         const ctx = canvas.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, 260);
         if (isDark) {
-            gradient.addColorStop(0, 'rgba(168, 85, 247, 0.38)');
-            gradient.addColorStop(1, 'rgba(168, 85, 247, 0.00)');
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.38)');
+            gradient.addColorStop(1, 'rgba(6, 182, 212, 0.00)');
         } else {
-            gradient.addColorStop(0, 'rgba(124, 58, 237, 0.22)');
-            gradient.addColorStop(1, 'rgba(124, 58, 237, 0.00)');
+            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.22)');
+            gradient.addColorStop(1, 'rgba(2, 132, 199, 0.00)');
         }
 
         const isDense = chartData.labels.length > 60;
@@ -2665,15 +2665,15 @@
         const datasets = [{
             label: 'EUR/JPY Rate',
             data: chartData.rates,
-            borderColor: '#a855f7',
+            borderColor: '#06b6d4',
             borderWidth: 2.2,
             backgroundColor: gradient,
             fill: true,
             tension: 0.15,
             pointRadius: isDense ? 0 : 2.5,
             pointHoverRadius: 6,
-            pointBackgroundColor: '#8b5cf6',
-            pointHoverBackgroundColor: '#c084fc',
+            pointBackgroundColor: '#06b6d4',
+            pointHoverBackgroundColor: '#67e8f9',
             pointHoverBorderColor: '#ffffff',
             pointHoverBorderWidth: 2
         }];
